@@ -2,6 +2,7 @@
 \usepackage{fullpage}
 \usepackage{amsmath,amssymb}
 \usepackage{cmll} %parr
+\input{Qcircuit}
 \usepackage{tikz}
 \usetikzlibrary{arrows,positioning,fit,petri,decorations.markings,shapes}
 
@@ -30,32 +31,23 @@ and the connection between classical linear logic (including the $\parr$ and $?$
 and quantum computation.
 
 \begin{figure}
-\begin{center} \begin{tikzpicture}
-    \node (1) at (-3,1) {$\qubit{1}$} ;
-    \node (0) at (-3,0) {$\qubit{0}$} ;
-    \node[draw,rectangle] (H1) at (-1,1) {$H$} ;
-    \node[draw,rectangle] (H2) at (-1,0) {$H$} ;
-    \node[draw,rectangle] (H3) at ( 6,0) {$H$} ;
-    \node (U) at (2,0.5) {$U_f$} ;
-    \node (y1) at (1,1) {\small $\qubit{y}$} ;
-    \node (x1) at (1,0) {\small $\qubit{x}$} ;
-    \node (x2) at (4,0) {\small $\qubit{x}$} ;
-    \node (y2) at (4,1) {\small $\qubit{y \oplus f(x)}$} ;
-    \node (end) at (8,0) {$\qubit{f(0) \oplus f(1)}$} ;
-    \node (empty) at (8,1) {} ;
-
-    \node [draw, fit= (x1) (y1) (x2) (y2) (U)] {};
-
-    \path[-] (1) edge node[align=center] {} (H1) ;
-    \path[-] (0) edge node[align=center] {} (H2) ;
-    \path[-] (H1) edge node[align=center] {} (y1) ;
-    \path[-] (H2) edge node[align=center] {} (x1) ;
-    \path[-] (x2) edge node[align=center] {} (H3) ;
-    \path[-] (H3) edge node[align=center] {} (end) ;
-    \path[-] (y2) edge node[align=center] {} (empty) ;
-\end{tikzpicture} \end{center}
-\caption{The Deutsch algorithm.
-\label{fig:deutsch}}
+% This is an utter hack.
+\def\GATE{%
+  ^{\raisebox{+1.25em}{$\ket{y}$}}%
+  _{\raisebox{-1.25em}{$\ket{x}$}}%
+  \rlap{$\qquad U_f$}{\qquad\qquad}%
+  ^{\raisebox{+1.25em}{$\ket{y \veebar f(x)}$}}%
+  _{\raisebox{-1.25em}{$\quad\qquad\ket{x}$}}%
+}%
+\centerline{\Qcircuit{
+  \lstick{\ket{0}} & \gate{X} & \gate{H} & \multigate{1}{\GATE} & \qw      & \qw    & \qw & \rstick{\hspace{-2em}\cdots}                  \\
+  \lstick{\ket{0}} & \qw      & \gate{H} & \ghost{\GATE}        & \gate{H} & \meter & \cw & \rstick{\hspace{-2em}\ket{f(0) \veebar f(1)}} \\
+}}
+% |y>        |y \veebar f(x)>
+%      U_f
+% |x>        |x>
+\caption{The Deutsch algorithm; $U_f$ is a unitary matrix that represents the
+  function $f : \mathbb{Z}_2 \to \mathbb{Z}_2$.\label{fig:deutsch}}
 \end{figure}
 
 In quantum mechanics, circuit diagrams are one of the primary means
