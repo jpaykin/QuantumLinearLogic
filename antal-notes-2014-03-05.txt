@@ -1,0 +1,36 @@
+Consider compiling QLC functions into unitary matrices.
+
+How can we handle case statements?
+
+CNOT:
+
+    cnot : ℚ ⊗ ℚ ⊸ Q ⊗ Q
+    cnot (q₁ ⊗ q₂) = case q₁, q₂ of
+      |00⟩ → |00⟩
+      |01⟩ → |01⟩
+      |10⟩ → |11⟩
+      |11⟩ → |10⟩
+
+But really:
+
+    not : ℚ ⊸ ℚ
+    not q = case q of
+      |0⟩ → |1⟩
+      |1⟩ → |0⟩
+
+    cnot : ℚ ⊗ ℚ ⊸ Q ⊗ Q
+    cnot (q₁ ⊗ q₂) = case q₁ of
+      |0⟩ → q₁ ⊗ q₂
+      |1⟩ → q₁ ⊗ not q₂
+
+But that's not linear, so:
+
+    not : ℚ ⊸ ℚ
+    not q = case q of
+      |0⟩ → |1⟩
+      |1⟩ → |0⟩
+
+    cnot : ℚ ⊗ ℚ ⊸ Q ⊗ Q
+    cnot (q₁ ⊗ q₂) = case q₁ of
+      |0⟩ → |0⟩ ⊗ q₂
+      |1⟩ → |1⟩ ⊗ not q₂
