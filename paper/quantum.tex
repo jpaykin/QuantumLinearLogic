@@ -1,0 +1,180 @@
+\documentclass[12pt]{amsart}
+
+\newif\ifdraft
+\drafttrue
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{fullpage}
+
+\input{Qcircuit}
+\let\bra\relax
+\let\ket\relax
+\usepackage{braket}
+
+\usepackage[svgnames]{xcolor}
+
+\newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
+
+\newcommand*{\bit}{\mathbb{B}}
+\newcommand*{\qubit}{\mathbb{Q}}
+
+\newcommand*{\term}[1]{\emph{#1}}
+
+\newcommand*{\latin}[1]{\textit{#1}}
+\newcommand*{\IE}{\latin{i.e.}}
+
+\usepackage[section]{placeins} % Floats should stay in their section
+
+\usepackage[ colorlinks
+           , pagebackref
+           , linktoc = all
+           , pdfusetitle ]{hyperref}
+\usepackage[all]{hypcap}
+\renewcommand*{\backrefalt}[4]{%
+  \ifcase #1 %
+    No citations.%
+  \or
+    Cited on page #2.%
+  \else
+    Cited on pages #2.%
+  \fi
+}
+\hypersetup{ linkcolor = DarkBlue
+           , citecolor = DarkGreen
+           , urlcolor  = DarkGoldenrod
+           , filecolor = Orange
+           , menucolor = DarkRed
+           , runcolor  = OrangeRed }
+
+% Cleveref (must be loaded late---after hyperref, no less!)
+\usepackage[noabbrev,capitalize,nameinlink]{cleveref}
+\newcommand{\creflastconjunction}{, and~}
+
+\begin{document}
+
+\section{Quantum computation}\label{sec:quantum-computation}
+
+When we change from classical\footnote{By \term{classical} here, we do not mean
+``affirming the law of the excluded middle'', as in classical logic
+ s.\ intuitionistic logic; we mean ``following the laws of traditional Newtonian
+physics'', as in classical physics vs.\ quantum mechanics.  This naming
+collision is unfortunate; however, in this paper, we do not discuss
+classical-logic--inspired computation, and so the term will always refer to the
+physical concept.\asz{This probably belongs earlier.}} to quantum computation,
+our primitive data type changes from the classical bit to the quantum
+\term{qubit} (short for \emph{qu}antum \emph{bit}).  At first glance, qubits
+behave much like bits: just as measuring a bit produces one of the two values
+$0$ or $1$, measuring a qubit produces one of the two values $\ket{0}$ or
+$\ket{1}$.  However, qubits behave very differently when \emph{not} being
+measured.  This is because qubits exhibit two properties that classical bits do
+not:\asz{\term{superposition} and \term{entanglement}. -- does this belong
+here?}
+\begin{enumerate}
+  \item \term{Superposition}: A qubit, prior to measurement, can be a
+    \emph{combination} of $\ket{0}$ and $\ket{1}$.
+
+  \item \term{Entanglement}: Two (or more) qubits can be related in such a way
+    that measuring the value of the first provides information about the value
+    of the second.\asz{This explanation doesn't make clear why entanglement is
+    magic, and I don't really know how to explain this without the math.  I'll
+    come back to this.}
+\end{enumerate}
+
+To explore the computational properties these give rise to, we will explore four
+different algorithms that require more of these features:
+\begin{enumerate}
+  \item Bitwise negation (\cref{sec:bitwise-negation-hl}), which is classical;
+  \item Simulating a fair coin (\cref{sec:fair-coin-hl}), which requires
+    superposition;
+  \item Agreeing on the result of a fair coin (\cref{sec:agree-coin-hl}), which
+    requires entanglement; and
+  \item Quantum teleportation (\cref{sec:teleportation-hl}), which makes
+    nontrivial use of both superposition and entanglement.
+\end{enumerate}
+
+\subsection{Bitwise negation}\label{sec:bitwise-negation-hl}
+Given a qubit (or, equally well, a classical bit), we can send it through a not
+gate, $X$, which changes $\ket{0}$ into $\ket{1}$ and $\ket{1}$ into $\ket{0}$;
+the quantum circuit diagram\asz{We need to explain how to read these.} for this
+is in \cref{fig:bitwise-negation}, demonstrating the bitwise negation of
+$\ket{0}$.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} & \gate{X} & \qw & \lstick{\ket{1}}
+  }}
+  \caption{Bitwise negation (of $\ket{0}$)}\label{fig:bitwise-negation}
+\end{figure}
+
+\subsection{Simulating a fair coin}\label{sec:fair-coin-hl}
+As we said above, a qubit may be in a \term{superposition} of $\ket{0}$ and
+$\ket{1}$; such states are called \term{mixed states}.  The simplest
+superposition is one which is ``$50\%$ $\ket{0}$ and $50\%$ $\ket{1}$''; to
+produce this, we use the quantum \term{Hadamard gate} $H$, which takes both
+$\ket{0}$ and $\ket{1}$ to such mixed states.\footnote{It takes them to two
+\emph{different} such states -- see \asz{some later section}.}  Then, when this
+mixed state is measured, the measurement is \emph{probabilistic}: it has a 50\%
+chance of being $\ket{0}$ and a 50\% chance of being $\ket{1}$.
+
+
+\subsection{Agreeing on the result of a fair coin}\label{sec:agree-coin-hl}
+\asz{Maybe we only need this (and the preceding two) at the concrete level.}
+
+\subsection{Quantum teleportation}\label{sec:teleportation-hl}
+Quantum teleportation allows us to do something very special: given some shared
+state between two parties, sending only two classical bits will allow us to
+transmit an entire qubit (\IE, two complex numbers).  Suppose Alice wishes to
+send a single qubit to Bob.  Then the algorithm proceeds as follows.
+
+\begin{enumerate}
+  \item \emph{Preparation.} Alice and Bob meet, and entangle two qubits, $a$ and
+    $b$, so that they are guaranteed to be equal but which qubit they will be
+    measured as is arbitrary.  Then they leave; Alice takes qubit $a$ with her,
+    and Bob takes qubit $b$ with him.
+
+  \item \emph{Composition.}  Sometime later, Alice places her message qubit $m$
+    into some arbitrary state $\ket{\psi}$.\asz{I \emph{think} kets aren't only
+    used for pure states.}
+
+  \item \emph{Measurement.}  Alice now wishes to send $\phi$ to Bob.  In order
+    to do this, Alice entangles $m$ and $a$ via a rotation\asz{check this
+    terminology} of the two: all pure states ($\ket{00}$, $\ket{01}$,
+    $\ket{10}$, and $\ket{11}$) are transformed into superpositions of two
+    different pure states.  Since $a$ was already entangled with Bob's qubit
+    $b$, this means that $m$ is entangled with $b$ as well.\asz{Should we split
+    this next off into a separate step?}  Alice then measures $a$ and $b$,
+    getting the two classical bits $m_M$ and $a_M$.
+
+  \item \emph{Classical communication.}  Alice sends Bob the classical message
+    $(m_M,a_M)$, via any arbitrary classical channel.
+
+  \item \asz{I decided this isn't clear without the details.  Maybe I'll try
+    explaining this to random victims -- er, friends -- and see how clear I can
+    make it.}
+\end{enumerate}
+
+\end{document}
+
+% ASZ: Notes that I want to use later:
+
+% The set of qubits is ℚ; this is ambiguous, so we explain it.
+, which we denote $\qubit$.\footnote{We do not have much
+call to refer to rational numbers, so we use $\qubit$ to refer exclusively to
+qubits, and never to rational numbers.}
+
+% The real definition of a simple mixed state
+we write this \[ \frac{1}{\sqrt{2}}\ket{0} + \frac{1}{\sqrt{2}}\ket{1} =
+\frac{\ket{0} + \ket{1}}{\sqrt{2}}. \]
+
+% ASZ: I use this to compile my LaTeX document; you can ignore it
+(defun my-compile ()
+  (interactive)
+  (shell-command (concat
+    "pdflatex -halt-on-error quantum.tex && "
+    "osascript ~/misc/Skim-open-revert.scpt quantum.pdf &")))
+(local-set-key (kbd "C-c C-c") #'my-compile)
+(local-set-key (kbd "C-c C-l") #'my-compile)
