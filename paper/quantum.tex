@@ -18,6 +18,7 @@
 \usepackage[svgnames]{xcolor}
 
 \newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
+\newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
 
 \newcommand*{\bit}{\mathbb{B}}
 \newcommand*{\qubit}{\mathbb{Q}}
@@ -119,6 +120,7 @@ $\ket{0}$ and $\ket{1}$ to such mixed states.\footnote{It takes them to two
 \emph{different} such states -- see \asz{some later section}.}  Then, when this
 mixed state is measured, the measurement is \emph{probabilistic}: it has a 50\%
 chance of being $\ket{0}$ and a 50\% chance of being $\ket{1}$.
+\jp{More should be said about measurement.}
 
 
 \subsection{Agreeing on the result of a fair coin}\label{sec:agree-coin-hl}
@@ -140,7 +142,7 @@ send a single qubit to Bob.  Then the algorithm proceeds as follows.
     into some arbitrary state $\ket{\psi}$.\asz{I \emph{think} kets aren't only
     used for pure states.}
 
-  \item \emph{Measurement.}  Alice now wishes to send $\phi$ to Bob.  In order
+  \item \emph{Measurement.}  Alice now wishes to send $\psi$ to Bob.  In order
     to do this, Alice entangles $m$ and $a$ via a rotation\asz{check this
     terminology} of the two: all pure states ($\ket{00}$, $\ket{01}$,
     $\ket{10}$, and $\ket{11}$) are transformed into superpositions of two
@@ -154,7 +156,7 @@ send a single qubit to Bob.  Then the algorithm proceeds as follows.
 
   \item \asz{I decided this isn't clear without the details.  Maybe I'll try
     explaining this to random victims -- er, friends -- and see how clear I can
-    make it.}
+    make it.} 
 \end{enumerate}
 
 \end{document}
