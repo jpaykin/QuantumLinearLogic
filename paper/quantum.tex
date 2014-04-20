@@ -10,18 +10,27 @@
 \usepackage{microtype}
 \usepackage{fullpage}
 
+\usepackage{newunicodechar}
+\newunicodechar{ψ}{\psi}
+
 \input{Qcircuit}
 \let\bra\relax
 \let\ket\relax
 \usepackage{braket}
 
+\usepackage{mathtools}
+
 \usepackage[svgnames]{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
 
 \newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
 \newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
 
 \newcommand*{\bit}{\mathbb{B}}
 \newcommand*{\qubit}{\mathbb{Q}}
+\newcommand*{\tensor}{\otimes}
 
 \newcommand*{\term}[1]{\emph{#1}}
 
@@ -159,6 +168,239 @@ send a single qubit to Bob.  Then the algorithm proceeds as follows.
     make it.} 
 \end{enumerate}
 
+\section{Quantum teleportation}\label{sec:teleportation}
+
+There are at least three ways to think about the quantum teleportation
+algorithm.  The first is to say that it's a method for transfering an arbitrary
+quantum state from one person two another; this focuses on the ``teleportation''
+part.  The second is to say that it's a way to send two complex numbers (a
+quantum state) to another person by sending them two bits, as long as you share
+some pre-arranged material (an entangled state); this focuses on the way that
+quantum computation allows unusually efficient computation.  The third way is to
+say that quantum teleportation is the construction of ``a `single-use
+isomorphism' between the (otherwise isomorphic) types [of a qubit] and [of two
+bits]''  (Selinger and Valiron, 2009\asz{reify this citation}); that is, it
+allows us to turn a qubit into two bits, and turn those two bits back into a
+qubit – but only \emph{once}.
+
+We now walk through a standard approach to the quantum teleportation algorithm,
+as seen in Abramsky and Coecke (2008) and Selinger and Valiron (2009)\asz{reify
+these citations}.  The algorithm's quantum circuit presentation is given in
+\cref{fig:quantum-teleportation-circuit}
+
+\begin{figure}
+\def\Qm{0}
+\def\Qa{-2}
+\def\Qb{-4}
+\begin{tikzpicture}
+  \def\labeledket#1#2{\mathllap{#1 \qquad} \ket{#2}}
+  \tikzset{wire label/.style={minimum width=1.5em}}
+  
+  \tikzset{gate/.style={rectangle, minimum width=1em, draw=black, fill=white}}
+  \def\cgateradius{4pt}
+  
+  \def\hadamard at#1;{
+    \node[gate] at #1 {$H$} ;
+  }
+
+  \def\control at#1;{
+    \filldraw[black] #1 circle (\cgateradius) ;
+  }
+  
+  \def\cnot at#1from#2to#3;{
+    \control at  (#1,#2) ;
+    \draw[black] (#1,#3) circle (\cgateradius) ;
+    \draw[black] (#1,#2) -- ($(#1,#3)+(0,-\cgateradius)$) ;
+  }
+  
+  \def\wire at#1for#2from#3to#4;{
+    \draw (0,#1)
+          node[wire label, left]  {$\labeledket{#2}{#3}$}
+          --
+          (14,#1)
+          node[wire label, right] {$\ket{#4}$} ;
+  }
+  
+  \tikzset{cwire/.style={double distance=2pt}}
+
+  \def\send cbit at#1from#2to#3;{
+    \draw[cwire] (#1,#2) -- (#1,#3) ;
+    \control at (#1,#2) ;
+  }
+  
+  \wire at \Qm for m from ψ to x ;
+  \wire at \Qa for a from 0 to y ;
+  \wire at \Qb for b from 0 to ψ ;
+  
+  \hadamard at (1.5,\Qa) ;
+  \cnot at 3 from \Qa to \Qb ;
+  
+  \cnot at 5 from \Qm to \Qa ;
+  \hadamard at (6.5,\Qm) ;
+
+  \pgfmathsetmacro\Qma{((\Qm)+(\Qa))/2}
+  \pgfmathsetmacro\meassize{ 2cm               % gate width
+                           + 1.5em             % extra for plain gate size
+                           - 1.4pt - 0.35 pt } % line width adjustment
+  \pgfmathsetmacro\meassizehalf{\meassize/2}
+  \pgfmathsetmacro\measwidthflat{2.5cm - \meassizehalf pt}
+
+  \draw[cwire] (9,\Qm) -- (14,\Qm) ;
+  \draw[cwire] (9,\Qa) -- (14,\Qa) ;
+  
+  \path[fill=white,draw=black]
+    ($(8,\Qma) + (0,\meassizehalf pt)$)
+    -- ++(\measwidthflat pt,0)
+    arc (90:-90:\meassizehalf pt)
+    -- ++(-\measwidthflat pt,0)
+    -- cycle ;
+
+  \coordinate (meas meter flat mid)
+    at ($(8,\Qma) + (\meassizehalf pt, -0.4em) + (-0.25em,0)$) ;
+  \draw (meas meter flat mid) ++(-2em,0) .. controls ++(2em,1em) .. ++(4em,0)
+        (meas meter flat mid) ++(-0.375em,0) -- ++(0.75em,1.5em) ;
+
+  \send cbit at 12.25 from \Qm to \Qb ;
+  \send cbit at 12.75 from \Qa to \Qb ;
+  \node[gate] at (12.5,\Qb) {$F_{x,y}$} ;
+\end{tikzpicture}
+\caption{The quantum circuit diagram for quantum teleportation.}%
+\label{fig:quantum-teleportation-circuit}
+\end{figure}
+
+\section{Quantum teleportation, with matrices}\label{sec:teleportation-matrices}
+
+\asz{Trying again}
+
+Quantum teleportation allows us to move a $1$-qubit state from Alice to Bob
+simply by sending two classical bits, as long as Alice and Bob share an
+entangled pair of qubits.  The algorithm is as follows.
+
+\begin{enumerate}
+  \item \emph{Preparation.}  Alice and Bob meet, and entangle two qubits, $a$
+    and $b$, which were initially each in the state $\ket{0}$.  These qubits
+    are entangled into the state \[ \frac{\ket{00} + \ket{11}}{\sqrt{2}} \] by
+    the operation
+    \begin{align*}
+      P
+      &= C(H \tensor I) \\
+      &= C
+         \left[ \frac{1}{\sqrt{2}}
+                \begin{pmatrix} 1 & 1 \\ -1 & -1 \end{pmatrix}
+                \tensor
+                \begin{pmatrix} 1 & 0 \\  0 &  1 \end{pmatrix} \right] \\
+      &= C
+         \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  1 &  0 \\
+           0 & 1 &  0 &  1 \\
+           1 & 0 & -1 &  0 \\
+           0 & 1 &  0 & -1
+         \end{pmatrix} \\
+      &= \begin{pmatrix}
+           1 & 0 & 0 & 0 \\
+           0 & 1 & 0 & 0 \\
+           0 & 0 & 0 & 1 \\
+           0 & 0 & 1 & 0
+         \end{pmatrix}
+         \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  1 &  0 \\
+           0 & 1 &  0 &  1 \\
+           1 & 0 & -1 &  0 \\
+           0 & 1 &  0 & -1
+         \end{pmatrix} \\
+      &= \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  1 &  0 \\
+           0 & 1 &  0 &  1 \\
+           0 & 1 &  0 & -1 \\
+           1 & 0 & -1 &  0
+         \end{pmatrix}.
+    \end{align*}
+    Thus, we have \[ P\ket{00} = P\begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}
+    = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \end{pmatrix} =
+    \frac{\ket{00} + \ket{11}}{\sqrt{2}}, \] as we wanted.
+
+  \item \emph{Composition.}  At some later time, Alice places her message qubit
+    $m$ into some arbitrary state $\ket{ψ}$.
+
+  \item \emph{Measurement.}  Alice now wishes to send the state $\ket{ψ}$ to
+    Bob.  To do this, Alice measures qubits $m$ and $a$ in a \emph{different}
+    basis, which involves entangling $m$ and $a$ before measuring them.  This
+    means that $m$ is entangled with $b$ as well, which is key.  Entanglement of
+    $m$ and $a$ is the reverse of the entanglement of $a$ and $b$:
+    \begin{align*}
+      M
+      &= (H \tensor I)C \\
+      &= \left[ \frac{1}{\sqrt{2}}
+                \begin{pmatrix} 1 & 1 \\ -1 & -1 \end{pmatrix}
+                \tensor
+                \begin{pmatrix} 1 & 0 \\  0 &  1 \end{pmatrix} \right]
+         C \\
+      &= \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  1 &  0 \\
+           0 & 1 &  0 &  1 \\
+           1 & 0 & -1 &  0 \\
+           0 & 1 &  0 & -1
+         \end{pmatrix}
+         C\\
+      &= \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  1 &  0 \\
+           0 & 1 &  0 &  1 \\
+           1 & 0 & -1 &  0 \\
+           0 & 1 &  0 & -1
+         \end{pmatrix}
+         \begin{pmatrix}
+           1 & 0 & 0 & 0 \\
+           0 & 1 & 0 & 0 \\
+           0 & 0 & 0 & 1 \\
+           0 & 0 & 1 & 0
+         \end{pmatrix} \\
+      &= \frac{1}{\sqrt{2}}
+         \begin{pmatrix}
+           1 & 0 &  0 &  1 \\
+           0 & 1 &  1 &  0 \\
+           1 & 0 &  0 & -1 \\
+           0 & 1 & -1 &  0
+         \end{pmatrix}
+    \end{align*}
+    Since $H^2 = I$, $I^2 = I$, and $C^2 = I$, we know that $M = P^{-1}$ (which
+    we may also see by noting that $M = P^\dag = P^{\mathsf{T}}$, and $M$ and
+    $P$ are unitary).  Thus, we know that $M$ measures in the following basis:
+    \begin{alignat*}{4}
+      M\frac{\ket{00} + \ket{11}}{\sqrt{2}}
+        &= M\frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+       &&= \frac{1}{2}\begin{pmatrix} 1+1 \\ 0 \\ 1-1 \\ 0 \end{pmatrix}
+        &= \begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}
+       &&= \ket{00} \\
+      %
+      M\frac{\ket{01} + \ket{10}}{\sqrt{2}}
+        &= M\frac{1}{\sqrt{2}}\begin{pmatrix} 0 \\ 1 \\ 1 \\ 0 \end{pmatrix}
+       &&= \frac{1}{2}\begin{pmatrix} 0 \\ 1+1 \\ 0 \\ 1-1 \end{pmatrix}
+        &= \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}
+       &&= \ket{01} \\
+      %
+      M\frac{\ket{00} - \ket{11}}{\sqrt{2}}
+        &= M\frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 0 \\ 0 \\ -1 \end{pmatrix}
+       &&= \frac{1}{2}\begin{pmatrix} 1-1 \\ 0 \\ 1+1 \\ 0 \end{pmatrix}
+        &= \begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \end{pmatrix}
+       &&= \ket{10} \\
+      %
+      M\frac{\ket{01} - \ket{10}}{\sqrt{2}}
+        &= M\frac{1}{\sqrt{2}}\begin{pmatrix} 0 \\ 1 \\ -1 \\ 0 \end{pmatrix}
+       &&= \frac{1}{2}\begin{pmatrix} 0 \\ 1-1 \\ 0 \\ 1+1 \end{pmatrix}
+        &= \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+       &&= \ket{11}
+    \end{alignat*}
+\end{enumerate}
+
+In other words, teleportation boils down to the following: $T\ket{ψ00} = v'$,
+where if we measure the first two bits of $v'$ to get $\hat{v}' \tensor
+\ket{ψ'}$, we have $F_{\hat{v}'}\ket{ψ'} = \ket{ψ}$.
+
 \end{document}
 
 % ASZ: Notes that I want to use later:
@@ -175,6 +417,7 @@ we write this \[ \frac{1}{\sqrt{2}}\ket{0} + \frac{1}{\sqrt{2}}\ket{1} =
 % ASZ: I use this to compile my LaTeX document; you can ignore it
 (defun my-compile ()
   (interactive)
+  (save-buffer)
   (shell-command (concat
     "pdflatex -halt-on-error quantum.tex && "
     "osascript ~/misc/Skim-open-revert.scpt quantum.pdf &")))
