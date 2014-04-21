@@ -1,0 +1,64 @@
+
+\newif\ifdraft
+\drafttrue
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{fullpage}
+
+\usepackage{newunicodechar}
+\newunicodechar{ψ}{\psi}
+
+\input{Qcircuit}
+\let\bra\relax
+\let\ket\relax
+\usepackage{braket}
+
+\usepackage{mathtools}
+
+\usepackage[svgnames]{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
+\newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
+
+\newcommand*{\bit}{\mathbb{B}}
+\newcommand*{\qubit}{\mathbb{Q}}
+\newcommand*{\tensor}{\otimes}
+
+\newcommand*{\term}[1]{\emph{#1}}
+
+\newcommand*{\latin}[1]{\textit{#1}}
+\newcommand*{\IE}{\latin{i.e.}}
+
+\usepackage[section]{placeins} % Floats should stay in their section
+
+\usepackage[ colorlinks
+           , pagebackref
+           , linktoc = all
+           , pdfusetitle ]{hyperref}
+\usepackage[all]{hypcap}
+\renewcommand*{\backrefalt}[4]{%
+  \ifcase #1 %
+    No citations.%
+  \or
+    Cited on page #2.%
+  \else
+    Cited on pages #2.%
+  \fi
+}
+\hypersetup{ linkcolor = DarkBlue
+           , citecolor = DarkGreen
+           , urlcolor  = DarkGoldenrod
+           , filecolor = Orange
+           , menucolor = DarkRed
+           , runcolor  = OrangeRed }
+
+% Cleveref (must be loaded late---after hyperref, no less!)
+\usepackage[noabbrev,capitalize,nameinlink]{cleveref}
+\newcommand{\creflastconjunction}{, and~}
