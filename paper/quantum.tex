@@ -1,68 +1,5 @@
 \documentclass[12pt]{amsart}
-
-\newif\ifdraft
-\drafttrue
-
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-
-\usepackage{lmodern}
-\usepackage{microtype}
-\usepackage{fullpage}
-
-\usepackage{newunicodechar}
-\newunicodechar{ψ}{\psi}
-
-\input{Qcircuit}
-\let\bra\relax
-\let\ket\relax
-\usepackage{braket}
-
-\usepackage{mathtools}
-
-\usepackage[svgnames]{xcolor}
-
-\usepackage{tikz}
-\usetikzlibrary{calc}
-
-\newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
-\newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
-
-\newcommand*{\bit}{\mathbb{B}}
-\newcommand*{\qubit}{\mathbb{Q}}
-\newcommand*{\tensor}{\otimes}
-
-\newcommand*{\term}[1]{\emph{#1}}
-
-\newcommand*{\latin}[1]{\textit{#1}}
-\newcommand*{\IE}{\latin{i.e.}}
-
-\usepackage[section]{placeins} % Floats should stay in their section
-
-\usepackage[ colorlinks
-           , pagebackref
-           , linktoc = all
-           , pdfusetitle ]{hyperref}
-\usepackage[all]{hypcap}
-\renewcommand*{\backrefalt}[4]{%
-  \ifcase #1 %
-    No citations.%
-  \or
-    Cited on page #2.%
-  \else
-    Cited on pages #2.%
-  \fi
-}
-\hypersetup{ linkcolor = DarkBlue
-           , citecolor = DarkGreen
-           , urlcolor  = DarkGoldenrod
-           , filecolor = Orange
-           , menucolor = DarkRed
-           , runcolor  = OrangeRed }
-
-% Cleveref (must be loaded late---after hyperref, no less!)
-\usepackage[noabbrev,capitalize,nameinlink]{cleveref}
-\newcommand{\creflastconjunction}{, and~}
+\input{preamble}
 
 \begin{document}
 
@@ -401,6 +338,20 @@ In other words, teleportation boils down to the following: $T\ket{ψ00} = v'$,
 where if we measure the first two bits of $v'$ to get $\hat{v}' \tensor
 \ket{ψ'}$, we have $F_{\hat{v}'}\ket{ψ'} = \ket{ψ}$.
 
+\section{Category Theory Background}
+\jp{If we want this section, include the following: categories,
+functors, natural transformations, adjunctions.}
+
+
+\section{Categorical Interpretations}
+\input{category.tex}
+
+\section{Quantum Algorithms}
+
+\bibliographystyle{plain}
+\bibliography{../bibliography}
+
+
 \end{document}
 
 % ASZ: Notes that I want to use later:
@@ -423,3 +374,4 @@ we write this \[ \frac{1}{\sqrt{2}}\ket{0} + \frac{1}{\sqrt{2}}\ket{1} =
     "osascript ~/misc/Skim-open-revert.scpt quantum.pdf &")))
 (local-set-key (kbd "C-c C-c") #'my-compile)
 (local-set-key (kbd "C-c C-l") #'my-compile)
+

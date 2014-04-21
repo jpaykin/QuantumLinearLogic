@@ -1,0 +1,33 @@
+
+Quantum computation is traditionally presented in the physicist's language
+of quantum mechanics---that is, superposition, measurement and wires. 
+As quantum computation moves into the realm of higher-order and thus more principled
+programming languages, it becomes clear that computer scientists need a way to 
+connect the language of quantum mechanics with the language of programming. 
+For example, Quipper\cite{green13quipper} uses higher-order features including
+functions and monads, but is essentially still a circuit description language.
+In order to more cohesively understand the semantics of quantum computation,
+Abramsky and Coecke\cite{abramsky2009categorical} describe a thorough 
+axiomatization of the major properties of quantum computation and logic
+as a categorical model. In this work we will use their model as a guide
+for the semantic underpinnings of a number of simple quantum algorithms.
+
+
+\subsection{Symmetric Monoidal Categories and the No-Cloning Theorem}
+
+A symmetric monoidal category is a category $C$, along with a bifunctor $\tensor$
+and a unit $1$, and with natural isormorphisms:
+\begin{align*}
+    \text{Associativity:}&\qquad \alpha_{A,B,C} : A \tensor (B \tensor C) \rightarrow (A \tensor B) \tensor C \\
+    \text{Left and right units:}&\qquad \lambda_A : 1 \tensor A \rightarrow A \text{ and } \rho_A : A \tensor 1 \rightarrow A \\
+    \text{Symmetry:}&\qquad \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
+\end{align*}
+In addition, the monoidal structure must commute with the isomorphisms in various ways \jp{Cite}
+
+The no-cloning theorem says there is no way to produce two copies of a single arbitrary quantum state.
+
+\subsection{Compact Closed Categories: Names and Conames}
+
+\subsection{Strong Compact Closure and the Inner Product}
+
+\subsection{Measurement via Biproducts}
