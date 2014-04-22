@@ -18,13 +18,68 @@ for the semantic underpinnings of a number of simple quantum algorithms.
 A symmetric monoidal category is a category $C$, along with a bifunctor $\tensor$
 and a unit $1$, and with natural isormorphisms:
 \begin{align*}
-    \text{Associativity:}&\qquad \alpha_{A,B,C} : A \tensor (B \tensor C) \rightarrow (A \tensor B) \tensor C \\
-    \text{Left and right units:}&\qquad \lambda_A : 1 \tensor A \rightarrow A \text{ and } \rho_A : A \tensor 1 \rightarrow A \\
-    \text{Symmetry:}&\qquad \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
+    \text{Associativity:}&\qquad 
+    \alpha_{A,B,C} : A \tensor (B \tensor C) \rightarrow (A \tensor B) \tensor C \\
+    \text{Left and right units:}&\qquad 
+    \lambda_A : 1 \tensor A \rightarrow A \text{ and } \rho_A : A \tensor 1 \rightarrow A \\
+    \text{Symmetry:}&\qquad 
+    \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
 \end{align*}
-In addition, the monoidal structure must commute with the isomorphisms in various ways \jp{Cite}
+In addition, the monoidal structure must commute with the isomorphisms in 
+various ways \jp{Cite}.
 
-The no-cloning theorem says there is no way to produce two copies of a single arbitrary quantum state.
+Along with monoidal categories comes a range of categorical structures tailored
+to the monoidal structure: functors, natural transformations, and adjunctions.
+
+A symmetric monoidal functor is a functor $F : C \Rightarrow D$ between two symmetric
+monoidal categories, along with a morphism
+\[ m_1^F : 1^D \rightarrow F 1^C \]
+in C (or D?) and a natural transformation
+\[ m_{A,B}^F : F A \tensor F B \rightarrow F(A \tensor B). \]
+Again, these morphisms must commute with the monoidal structures in $C$ and $D$
+in certain ways not outlined here. 
+
+A monoidal natural transformation between two symmetric monoidal functors
+is a natural transformation which commutes with the monoidal components $m_1$ and $m_{A,B}$.
+A monoidal adjunction is simply an adjunction where the unit and counit
+are monoidal natural transformations.
+
+The no-cloning theorem says there is no way to produce two copies of a single 
+arbitrary quantum state. To be more precise, the no-cloning theorem states that
+there is no unitary transformation which can duplicate every possible quantum state.
+
+\begin{theorem}[No-Cloning (cite)]
+    There is no unitary transformation acting on qubits as follows:
+    \[ U(\ket{0}\tensor\ket{\varphi}) = \ket{\varphi}\tensor\ket{\varphi}.\footnotemark \]
+    \footnotetext{Unitary transformations are, in traditional quantum mechanics,
+    always square matrices, so in this case we ``pad'' the transformation with an
+    arbitrary \jp{???} state.}
+\end{theorem}
+\begin{proof}
+    Suppose there were such a transformation. We may expand an arbitrary $\ket{\varphi}$
+    as $\varphi = \alpha\ket{0} + \beta\ket{1}$. By the definition of $U$, we know
+    \begin{align*} 
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \ket{\varphi} \tensor \ket{\varphi} \\
+        &= (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1}) \\
+        &= \alpha^2 \ket{00} + \alpha\beta\ket{01} + \alpha\beta\ket{10} + \beta^2\ket{11}.
+    \end{align*}
+    However, since all unitary transformations are necessarily linear, we can also compute
+    \begin{align*}
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \alpha U(\ket{0} \tensor \ket{0}) + \beta U(\ket{0} \tensor \ket{1}) \\
+        &= \alpha \ket{00} + \beta \ket{11}.
+    \end{align*}
+    These two expansions are unequal, thus we have reached a contradiction. 
+\end{proof}
+
+So what does this have to do with monoidal categories? 
+The use of linearity in the proof of the no-cloning theorem is exactly the overlap.
+Without additional structure, monoidal categories do not allow arbitrary
+morphisms $A \rightarrow A \tensor A$. Abramsky and Coecke\cite{abramsky2009categorical}
+prove the corresponding property holds for their entire categorical model,
+but for now it suffices to say that the structure added in the remainder
+of this section does not allow arbitrary duplication on the monoidal structure.
 
 \subsection{Compact Closed Categories: Names and Conames}
 
