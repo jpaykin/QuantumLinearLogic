@@ -24,7 +24,7 @@
 \usepackage[svgnames]{xcolor}
 
 \usepackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,shapes,arrows}
 
 \newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
 \newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
@@ -66,3 +66,16 @@
 \newcommand{\creflastconjunction}{, and~}
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\unit}{\mathbf{1}}
+\newcommand{\zero}{\mathbf{0}}
+\newcommand{\basis}{\operatorname{basis}}
+\newcommand{\lift}[1]{\ulcorner #1 \urcorner}
+\newcommand{\llower}[1]{\llcorner #1 \lrcorner}
+\newcommand{\meas}{\operatorname{meas}}
+\newcommand{\Qubit}{Q}
+
+% References
+\newcommand\Figure[1]{Figure~\ref{fig:#1}}
