@@ -1,0 +1,384 @@
+\documentclass[mathserif,14pt]{beamer}
+\usepackage{presentation-preamble}
+
+% Preamble (fold)
+\title{\LARGE Quantum Mechanics, Category Theory, and Linear Logic}
+\author{~\\[\smallskipamount]\Large Jennifer~Paykin \and Antal~Spector-Zabusky}
+\date{April 30, 2014}
+% (end)
+
+% Talk-specific formatting (fold)
+\newcommand<>{\fade}[1]{\textcolor#2{black!50}{#1}}
+
+\DeclarePairedDelimiter{\name}{\ulcorner}{\urcorner}
+\DeclarePairedDelimiter{\coname}{\llcorner}{\lrcorner}
+
+\usepackage{braket}
+\newcommand*{\qubit}{Q}
+\makeatletter
+\newcommand*{\QCircuitSetup}[1]{%
+  % #1 = length of wire.
+  \def\wirelength{#1}%
+  %
+  \def\visibly##1<##2> ##3;{\visible<##2>{##1##3;}}%
+  %
+  \def\defvisibly##1##2;##3{%
+    \expandafter\def\csname\string##1@impl\endcsname##2;{##3}%
+    \expandafter\edef\csname\string##1@spec\endcsname{%
+      \noexpand\visibly%
+      \expandafter\noexpand\csname\string##1@impl\endcsname}%
+    \edef##1{\noexpand\@ifnextchar<%
+               \expandafter\noexpand\csname\string##1@spec\endcsname
+               \expandafter\noexpand\csname\string##1@impl\endcsname}%
+  }%
+  %
+  \def\labeledket##1##2{##1 \quad \mathrlap{\ket{##2}}{\phantom{\ket{ψ}}}}%
+  \tikzset{wire label/.style={minimum width=1.5em}}%
+  %
+  \tikzset{gate/.style={rectangle, minimum width=1em, draw=black, fill=white}}%
+  \def\cgateradius{6pt}%
+  %
+  \defvisibly\hadamard at##1;{%
+    \node[gate] at ##1 {$H$} ;%
+  }%
+  %
+  \def\control at##1;{%
+    \filldraw[black] ##1 circle (\cgateradius) ;%
+  }%
+  %
+  \defvisibly\cnot at##1from##2to##3;{%
+    \control at  (##1,##2) ;%
+    \draw[black] (##1,##3) circle (\cgateradius) ;%
+    \draw[black] (##1,##2) -- ($(##1,##3)+(0,-\cgateradius)$) ;%
+  }%
+  %
+  \def\wire at##1for##2from##3to##4;{%
+    \draw (0,##1)%
+          node[wire label, left]  {$\labeledket{##2}{##3}$}%
+          --%
+          (\wirelength,##1)%
+          node[wire label, right] {$\ket{##4}$} ;%
+  }%
+  %
+  \def\swire at##1from##2;{%
+    \draw (0,##1)%
+          node[wire label, left] {$\ket{##2}$}%
+          --%
+          (\wirelength,##1) ;%
+  }%
+  %
+  \tikzset{cwire/.style={double distance=2pt}}%
+  %
+  \def\finally from##1to##2state##3;{%
+    \draw[decorate,decoration={brace, amplitude=1em},xshift=0.2cm]
+      ($(\wirelength,##1)+(0,0.2)$)%
+      --%
+      ($(\wirelength,##2)+(0,-0.2)$)%
+      node[midway,right=0.4cm] {$##3$} ;%
+  }%
+  %
+  \def\send cbit at##1from##2to##3;{%
+    \draw[cwire] (##1,##2) -- (##1,##3) ;%
+    \control at (##1,##2) ;%
+  }%
+  %
+  \defvisibly\qstate at##1below by##2from##3to##4state##5;{%
+    \draw[loosely dashed, draw=gray]
+      ($(##1,##3)+(0,1)$)%
+      --%
+      ($(##1,##4)+(0,-##2)$)%
+      node[below, draw, solid, thin] {$##5$} ;%
+  }%
+}
+\makeatother
+% (end)
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Qubit}
+  \[ α\ket{0} + β\ket{1} \]
+  \[ α,β ∈ ℂ \]
+
+\medskip
+
+Measured as:
+\begin{itemize}
+  \item $\ket{0}$ with probability $|α|²$
+  \item $\ket{1}$ with probability $|β|²$
+\end{itemize}
+\medskip
+
+\begin{center}
+No cloning!\\
+No deleting!
+\end{center}
+\end{frame}
+
+\begin{frame}{\!Categorical Axiomatization of QM}
+\begin{center}
+\vspace*{-\bigskipamount}Due to Abramsky and Coecke (2008)\\[1.25\bigskipamount]
+\begin{tikzpicture}[every node/.style={draw, circle,
+                                       text width=2.3cm,
+                                       text centered}]
+  \def\sep{4}
+  \path (0,0)     node {Linear logic}             ++(\sep,0)
+                  node {$⊗ \quad 1$ \\ $!$}       ++(\sep,0)
+                  node {Vector spaces}            ;
+  \path (0,-\sep) node {Quantum logic}            ++(\sep,0)
+                  node {$⊗ \quad 1$\\$⊕ \quad 0$} ++(\sep,0)
+                  node {Hilbert spaces}           ;
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Tensor product, in QM}
+  $\text{One qubit: } \qubit ≔ ℂ² / \,{∼}$
+  \bigskip
+  
+  Qubits are linear combinations over the basis:
+  \vspace{-\baselineskip}%
+  \begin{itemize}
+    \item One qubit: $\{\ket{0}, \ket{1}\}$ (in $\qubit$)
+    \item Two qubits: $\{\ket{00}, \ket{01}, \ket{10}, \ket{11}\}$ (in $\qubit ⊗
+          \qubit$)
+    \item …
+  \end{itemize}
+  \bigskip
+  
+  \centerline{\emph{Two-qubit states are not two one-qubit states!}}
+  \bigskip
+  
+  A two-qubit state is \term{separable} if it has the form $(α₀\ket{0} +
+  α₁\ket{1}) ⊗ (β₀\ket{0} + β₁\ket{1})$; otherwise, it is \term{entangled}.
+\end{frame}
+
+\begin{frame}{Tensor product, categorically}
+  In $\cat{Hilb}$(ert spaces):
+  \begin{itemize}
+    \item $A ⊗ B$ is the regular tensor product (${⊗} : ℂ^m → ℂ^n → ℂ^{mn}$)
+    \item $1 = ℂ$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[label=preparation]{\!Preparation of an entangled state}
+\begin{center}
+\def\Qa{0}
+\def\Qb{-2}
+\begin{tikzpicture}
+  \QCircuitSetup{7.5}
+  
+  \swire at \Qa from 0 ;
+  \swire at \Qb from 0 ;
+  
+  \hadamard at (2.5,\Qa) ;
+  \cnot     at 5 from \Qa to \Qb ;
+
+  \qstate<2-> at 1.25 below by 1 from \Qa to \Qb
+              state \ket{0} ⊗ \ket{0} ;
+  \qstate<3-> at 3.75 below by 1 from \Qa to \Qb
+              state \frac{\ket{0} + \ket{1}}{\sqrt{2}} ⊗ \ket{0} ;
+  \qstate<4-> at 6.25 below by 1 from \Qa to \Qb
+              state \frac{\ket{00} + \ket{11}}{\sqrt{2}} ;
+  
+  \finally from \Qa to \Qb state \frac{\ket{00} + \ket{11}}{\sqrt{2}} ;
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Preparation, categorically}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.155cm]
+  \node (a* ox a) at (0,0)  {$A^* ⊗ A$} ;
+  \node (a* ox b) at (1,0)  {$A^* ⊗ B$} ;
+  \node (1)       at (0,-1) {$1$}       ;
+
+  \draw[->] (1)       -- (a* ox a) node[midway,left]        {$η_A$} ;
+  \draw[->] (a* ox a) -- (a* ox b) node[midway,above]       {$\id_{A^*} ⊗ f$} ;
+  \draw[->] (1)       -- (a* ox b) node[midway,below right] {$\name{f}$} ;
+\end{tikzpicture}
+\end{center}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+  \par\bigskip\bigskip
+  $\name{\id_\qubit}({\star}) = \ket{00} + \ket{11}$\par
+  \pause\bigskip\bigskip
+  But what about the constant factor?
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Scalars, categorically}
+\begin{center}
+A \term{scalar} is a morphism $1 → 1$\par
+
+\vspace{3\bigskipamount}
+
+For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
+\end{center}
+\end{frame}
+
+\againframe<4->{preparation}
+
+\begin{frame}{Measurement, categorically}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.155cm]
+  \node (a ox b*) at (1,1) {$A ⊗ B^*$} ;
+  \node (b ox b*) at (1,0) {$B ⊗ B^*$} ;
+  \node (1)       at (0,0) {$1$}       ;
+
+  \draw[->] (a ox b*) -- (1)       node[midway,above left] {$\coname{f}$} ;
+  \draw[->] (a ox b*) -- (b ox b*) node[midway,right]      {$f ⊗ \id_{B^*}$} ;
+  \draw[->] (b ox b*) -- (1)       node[midway,below]      {$ε_B$} ;
+\end{tikzpicture}
+\end{center}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+  Consider\\$\quad\ β_{i,j} : \qubit ⊗ \qubit^* → 1$\\where, for instance,
+  \begin{align*}
+    β_{0,0}(\ket{00}) &= 1 \\
+    β_{0,0}(\ket{01}) &= 0 \\
+    β_{0,0}(\ket{10}) &= 0 \\
+    β_{0,0}(\ket{11}) &= 0
+  \end{align*}
+  This represents the case when the input qubits are measured to be $\ket{00}$.
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{$⊕$, categorically}
+  For two qubits, the four possible measurement outcomes are
+  \[ β_{0,0},β_{0,1},β_{1,0},β_{1,1} : Q ⊗ Q^* → 1 \]
+
+  \bigskip\bigskip
+  
+  We make $⊕$ be a biproduct, so we have
+  \[ ⟨β_{0,0},β_{0,1},β_{1,0},β_{1,1}⟩ : Q ⊗ Q^* → 1⊕1⊕1⊕1 \]
+\end{frame}
+
+\begin{frame}{Quantum teleportation}
+\def\Qm{0}
+\def\Qa{-2}
+\def\Qb{-4}
+\pgfmathsetmacro\Qma{((\Qm)+(\Qa))/2}
+\pgfmathsetmacro\Qab{((\Qa)+(\Qb))/2}
+
+\begin{center}
+\hspace*{-1cm}%
+\begin{tikzpicture}[scale=0.7]
+  \QCircuitSetup{14}
+
+  \begin{scope}[draw=white]
+    \wire at \Qm for m from ψ to x ;
+    \wire at \Qa for a from 0 to y ;
+  \end{scope}
+  \draw (0,\Qm) -- (9,\Qm) ;
+  \draw (0,\Qa) -- (9,\Qa) ;
+  \wire at \Qb for b from 0 to ψ ;
+  
+  \node
+    [ text height = 1.1cm
+    , text depth  = 0.9cm
+    , text width  = 1.9cm
+    , text centered
+    , onslide = <1>{draw = black, fill = white}
+    , onslide = <2->{draw = gray, thick} ]
+    at (2.25,\Qab)
+    {{\visible<1>{\small entangle}}} ;
+  
+  \node
+    [ text height   = 1.1cm
+    , text depth    = 0.9cm
+    , text width    = 1.9cm
+    , text centered
+    , onslide = <1-2>{draw = black, fill = white}
+    , onslide = <3->{draw = gray, thick} ]
+    at (6,\Qma)
+    {{\visible<1-2>{\small entangle$^†$}}} ;
+  
+  \hadamard<2-> at (1.5,\Qa) ;
+  \cnot<2-> at 3 from \Qa to \Qb ;
+
+  \cnot<3-> at 5 from \Qm to \Qa ;
+  \hadamard<3-> at (6.5,\Qm) ;
+
+  \pgfmathsetmacro\meassize{ 2cm               % gate width
+                           + 1.5em             % extra for plain gate size
+                           - 1.4pt - 0.35 pt } % line width adjustment
+  \pgfmathsetmacro\meassizehalf{\meassize/2}
+  \pgfmathsetmacro\measwidthflat{2.5cm - \meassizehalf pt}
+
+  \draw[cwire, line cap=butt]
+    (9,\Qm) -- (12.1,\Qm)   % (\wirelength,\Qm)
+    (9,\Qa) -- (12.9,\Qa) ; % (\wirelength,\Qa) ;
+  
+  \path[fill=white,draw=black]
+    ($(8,\Qma) + (0,\meassizehalf pt)$)
+    -- ++(\measwidthflat pt,0)
+    arc (90:-90:\meassizehalf pt)
+    -- ++(-\measwidthflat pt,0)
+    -- cycle ;
+
+  \coordinate (meas meter flat mid)
+    at ($(8,\Qma) + (\meassizehalf pt, -0.4em) + (-0.25em,0)$) ;
+  \draw (meas meter flat mid) ++(-2em,0) .. controls ++(2em,1em) .. ++(4em,0)
+        (meas meter flat mid) ++(-0.375em,0) -- ++(0.75em,1.5em) ;
+
+  \send cbit at 12.1 from \Qm to \Qb ;
+  \send cbit at 12.9 from \Qa to \Qb ;
+  \node[gate] at (12.5,\Qb) {$F_{x,y}$} ;
+  
+  \qstate<4-> at 0.35  below by 2 from \Qm to \Qb
+              state \ket{ψ00} ;
+  \qstate<5-> at 4.1   below by 2 from \Qm to \Qb
+              state \ket{ψ} ⊗ \frac{\ket{00} + \ket{11}}{\sqrt{2}} ;
+  \qstate<6-> at 7.8   below by 2 from \Qm to \Qb
+              state \ket{ω} ;
+  \qstate<7-> at 11    below by 2 from \Qm to \Qb
+              state \ket{xy\mathord{⊗}ψ'} ;
+  \qstate<8-> at 13.75 below by 2 from \Qm to \Qb
+              state \ket{xyψ} ;
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\end{document}
+
+% ASZ: I use this to compile my LaTeX document; you can ignore it
+(defun my-compile (output)
+  (interactive "P")
+  (save-buffer)
+  (shell-command (concat
+    "echo Compiling..."
+    " && "
+    "pdflatex -halt-on-error presentation.tex" (if output "" " >/dev/null")
+    " && "
+    "osascript ~/misc/Skim-open-revert.scpt presentation.pdf"
+    " && "
+    "echo Done. || echo Error."
+    " &")))
+(local-set-key (kbd "C-c C-l") #'my-compile)
+
+% ASZ: Make the Agda input method more useful
+(defun my-agda-ignore (str)
+  (setq agda-input-user-translations
+        (cons (list str (concat "\\" str)) agda-input-user-translations)))
+(loop for str in '("begin" "end" "item" "usepackage" "emph" "def" "newcommand"
+                   "par" "centerline" "text" "bigskip" "left" "right" "frac"
+                   "sqrt" "relax" "expandafter" "string"
+                   ; TiKZ
+                   "node" "draw" "fill" "filldraw" "path" "text"
+                   ; Beamer
+                   "visible" "invisible" "pause"
+                   ; Application specific
+                   "ket" "bra" "cat" "Qa" "Qb" "Qm" "visibly" "id" "term")
+      do (my-agda-ignore str))
+(agda-input-setup)
+(set-input-method "Agda")

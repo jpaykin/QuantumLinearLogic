@@ -1,0 +1,441 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{presentation-preamble}[2013/04/29 Beamer preamble]
+
+% Document setup (fold)
+% Beamer (fold)
+\usetheme{Warsaw}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+% Create sectioning slides that, like the default, are just a big box; however,
+% (a) we don't insert a section number; and (b) we automatically insert the
+% sectioning frames.
+\setbeamertemplate{section page}
+{
+  \begin{centering}
+    \begin{beamercolorbox}[sep=12pt,center]{part title}
+      \usebeamerfont{section title}\insertsection\par
+    \end{beamercolorbox}
+  \end{centering}
+}
+\AtBeginSection{\frame{\sectionpage}}
+
+% Fix height of top bar for use with Tex Gyre Adventor (fold)
+% Copied from Warsaw, with one dimension modified
+\setbeamertemplate{frametitle}
+{%
+  \nointerlineskip%
+  \vskip-2pt%
+  \hbox{\leavevmode
+    \advance\beamer@leftmargin by -12bp%
+    \advance\beamer@rightmargin by -12bp%
+    \beamer@tempdim=\textwidth%
+    \advance\beamer@tempdim by \beamer@leftmargin%
+    \advance\beamer@tempdim by \beamer@rightmargin%
+    \hskip-\Gm@lmargin\hbox{%
+      \setbox\beamer@tempbox=\hbox{\begin{minipage}[b]{\paperwidth}%
+          \vbox{}\vskip-.5ex% ASZ: Changed from -.75ex
+          \leftskip0.3cm%
+          \rightskip0.3cm plus1fil\leavevmode
+          \insertframetitle%
+          \ifx\insertframesubtitle\@empty%
+            \strut\par%
+          \else
+            \par{\usebeamerfont*{framesubtitle}{\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}\strut\par}%
+          \fi%
+          \nointerlineskip
+          \vbox{}%
+          \end{minipage}}%
+      \beamer@tempdim=\ht\beamer@tempbox%
+      \advance\beamer@tempdim by 2pt%
+      \begin{pgfpicture}{0pt}{0pt}{\paperwidth}{\beamer@tempdim}
+        \usebeamercolor{frametitle right}
+        \pgfpathrectangle{\pgfpointorigin}{\pgfpoint{\paperwidth}{\beamer@tempdim}}
+        \pgfusepath{clip}
+        \pgftext[left,base]{\pgfuseshading{beamer@frametitleshade}}
+      \end{pgfpicture}
+      \hskip-\paperwidth%
+      \box\beamer@tempbox%
+    }%
+    \hskip-\Gm@rmargin%
+  }%
+  \nointerlineskip
+    \vskip-0.2pt
+    \hbox to\textwidth{\hskip-\Gm@lmargin\pgfuseshading{beamer@topshade}\hskip-\Gm@rmargin}
+    \vskip-2pt
+}
+% (end)
+% (end)
+
+% Input/output formatting (fold)
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% (end)
+
+% Fonts (fold)
+\usepackage{eulervm} % kmath?  But I don't like its alpha
+\usepackage{tgadventor}
+\usepackage{microtype}
+% (end)
+
+% Colors (fold)
+\definecolor{Structure}{RGB}{125,14,183}
+\usecolortheme[named=Structure]{structure}
+%\definecolor{Emphasis}{RGB}{128,16,216}
+\colorlet{Emphasis}{purple}
+% (end)
+
+% General utility (fold)
+\usepackage{etoolbox}
+\usepackage{pgffor}
+\usepackage{xstring}
+\usepackage{multicol}
+\usepackage{mathtools}
+% (end)
+
+% Symbols (math and otherwise) (fold)
+\usepackage{textgreek}
+\usepackage{upgreek}
+\usepackage{textcomp}
+\usepackage{upquote}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{mathtools}
+\usepackage{braket}
+
+% Building new symbols (fold)
+% This macro is from egreg's answer to ``How do you superimpose two symbols over
+% each other?'', at http://tex.stackexchange.com/questions/21644/21647#21647 ;
+% to understand ooalign, see egreg's answer to ``\subseteq + \circ as a single
+% symbol ("open subset")'', at
+% http://tex.stackexchange.com/questions/22371/22375#22375 .
+\newcommand{\rawsuperimpose}[2]{%
+  {\ooalign{$#1\@firstoftwo#2$\cr
+            \hidewidth$#1\@secondoftwo#2$\hidewidth\cr}}%
+}
+\newcommand{\superimpose}[2]{\mathpalette\rawsuperimpose{{#1}{#2}}}
+% (end)
+
+\newcommand{\cupdot}{\mathbin{\superimpose{\cup}{\cdot}}}
+% For this "aligned colon", we need to add half a thin space for some reason.
+\newcommand{\acolon}{\mathbin{\superimpose{\hphantom{=}%
+                                           \hspace{0.08333333333333em}}%
+                                          {:}}}
+% (end)
+
+% More sizes (fold)
+\usepackage{relsize}
+\renewcommand{\RSlargest}{50pt}
+% (end)
+
+% Tables (fold)
+\usepackage{booktabs}
+\usepackage{tabularx}
+\newcommand*{\thead}[1]{\textit{#1}}
+% (end)
+
+% Figures (fold)
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{every picture/.style = { ultra thick, rounded corners = 2pt
+                                , line cap = round, > = stealth }}
+\tikzset{
+  rectangles/.style = {
+    rectangle split, draw, rectangle split parts = #1
+  },
+  horizontals/.style = {
+    rectangles = #1, rectangle split horizontal = true
+  },
+  verticals/.style = {
+    rectangles = #1, rectangle split horizontal = false
+  },
+  square/.style = {
+    regular polygon, regular polygon sides = 4
+  }
+}
+% This PGF key is from is from Matthew Leingang's answer to ``How to make beamer
+% overlays with Tikz node'', at http://tex.stackexchange.com/a/6155/1425.
+\tikzset{onslide/.code args={<#1>#2}{%
+  \only<#1>{\pgfkeysalso{#2}}%
+}}
+% (end)
+
+% Restyling (fold)
+\let\lestraight\le
+\let\gestraight\ge
+\let\le\leqslant
+\let\ge\geqslant
+\let\stdphi\phi
+\let\phi\varphi
+\let\varphi\stdphi
+% (end)
+
+% Unicode (fold)
+\usepackage{newunicodechar}
+
+\begingroup
+\newcommand{\greek@UpcaseFirst}[1]{\expandafter\greek@UpcaseFirst@go#1}
+\newcommand{\greek@UpcaseFirst@go}[1]{\ifcase`#1\relax
+   0\or 1\or 2\or 3\or 4\or 5\or 6\or 7\or 8\or 9\or
+  10\or11\or12\or13\or14\or15\or16\or17\or18\or19\or
+  20\or21\or22\or23\or24\or25\or26\or27\or28\or29\or
+  30\or31\or32\or33\or34\or35\or36\or37\or38\or39\or
+  40\or41\or42\or43\or44\or45\or46\or47\or48\or49\or
+  50\or51\or52\or53\or54\or55\or56\or57\or58\or59\or
+  60\or61\or62\or63\or64\or A\or B\or C\or D\or E\or
+   F\or G\or H\or I\or J\or K\or L\or M\or N\or O\or
+   P\or Q\or R\or S\or T\or U\or V\or W\or X\or Y\or
+   Z\or91\or92\or93\or94\or95\or96\or A\or B\or C\or
+   D\or E\or F\or G\or H\or I\or J\or K\or L\or M\or
+   N\or O\or P\or Q\or R\or S\or T\or U\or V\or W\or
+   X\or Y\or Z\or123\or124\or125\or126\or127\or128\or129\or
+  \fi}
+\newcommand{\greek@DoUpcase}[2]{%
+  \IfBeginWith{#1}{var}{}{\IfBeginWith{#1}{std}{}{#2}}%
+}
+% The first complicated part is from http://tex.stackexchange.com/a/27594/1425;
+% it's necessary so that `\ifmmode` works properly at the beginning of array
+% cells.
+\newcommand{\greek@MakeCommand}[2]{%
+  \global\expandafter\newcommand\csname #1#2\endcsname{}
+  \csxdef{#1#2}{%
+    \noexpand\ifnum\noexpand\currentgrouptype=6 %
+      \noexpand\ifnum\noexpand\lastnodetype=0 %
+      \noexpand\else
+        \noexpand\ifnum\noexpand\lastnodetype=7 %
+        \noexpand\else
+          \noexpand\relax
+        \noexpand\fi
+      \noexpand\fi
+    \noexpand\fi
+    \noexpand\ifmmode
+      \expandafter\noexpand\csname#2\endcsname
+    \noexpand\else
+      \expandafter\noexpand\csname text#2\endcsname
+    \noexpand\fi
+  }%
+}
+
+\foreach \g in {alpha,      beta,     gamma,   delta,  epsilon,  zeta,
+                eta,        theta,    iota,    kappa,  lambda,   mu,
+                nu,         xi,       omicron, pi,     rho,      sigma,
+                tau,        upsilon,  phi,     chi,    psi,      omega,
+                varepsilon, vartheta, varpi,   varrho, varsigma, varphi,
+                stdphi} {
+  \greek@MakeCommand{g}{\g}
+  \greek@DoUpcase{\g}{\greek@MakeCommand{G}{\greek@UpcaseFirst\g}}
+}
+\endgroup
+
+\let\textcompmu\textmu
+\let\textmu\textmugreek
+\let\textOmicron\textOmikron
+\let\textomicron\textomikron
+\let\textvarepsilon\textepsilon
+\let\textepsilon\straightepsilon
+\let\texttheta\straighttheta
+\let\textvartheta\scripttheta
+\def\textvarpi{\ensuremath{\upvarpi}}
+\def\textvarrho{{\ensuremath{\varrho}}}
+\let\textvarphi\straightphi
+
+\let\Alpha=A
+\let\Beta=B
+\let\Epsilon=E
+\let\Zeta=Z
+\let\Eta=H
+\let\Iota=I
+\let\Kappa=K
+\let\Mu=M
+\let\Nu=N
+\let\Omicron=O
+\let\omicron=o
+\let\Rho=P
+\let\Tau=T
+\let\Chi=X
+
+\newunicodechar{Α}{\GAlpha}
+\newunicodechar{α}{\galpha}
+\newunicodechar{Β}{\GBeta}
+\newunicodechar{β}{\gbeta}
+\newunicodechar{Γ}{\GGamma}
+\newunicodechar{γ}{\ggamma}
+\newunicodechar{Δ}{\GDelta}
+\newunicodechar{δ}{\gdelta}
+\newunicodechar{Ε}{\GEpsilon}
+\newunicodechar{ε}{\gvarepsilon}
+\newunicodechar{ϵ}{\gepsilon}
+\newunicodechar{Ζ}{\GZeta}
+\newunicodechar{ζ}{\gzeta}
+\newunicodechar{Η}{\GEta}
+\newunicodechar{η}{\geta}
+\newunicodechar{Θ}{\GTheta}
+\newunicodechar{θ}{\gtheta}
+\newunicodechar{ϑ}{\gvartheta}
+\newunicodechar{Ι}{\GIota}
+\newunicodechar{ι}{\giota}
+\newunicodechar{Κ}{\GKappa}
+\newunicodechar{κ}{\gkappa}
+\newunicodechar{Λ}{\GLambda}
+\newunicodechar{λ}{\glambda}
+\newunicodechar{Μ}{\GMu}
+\newunicodechar{μ}{\gmu}
+\newunicodechar{Ν}{\GNu}
+\newunicodechar{ν}{\gnu}
+\newunicodechar{Ξ}{\GXi}
+\newunicodechar{ξ}{\gxi}
+\newunicodechar{Ο}{\GOmicron}
+\newunicodechar{ο}{\gomicron}
+\newunicodechar{Π}{\GPi}
+\newunicodechar{π}{\gpi}
+\newunicodechar{ϖ}{\gvarpi}
+\newunicodechar{Ρ}{\GRho}
+\newunicodechar{ρ}{\grho}
+\newunicodechar{ϱ}{\gvarrho}
+\newunicodechar{Σ}{\GSigma}
+\newunicodechar{σ}{\gsigma}
+\newunicodechar{ς}{\gvarsigma}
+\newunicodechar{Τ}{\GTau}
+\newunicodechar{τ}{\gtau}
+\newunicodechar{Υ}{\GUpsilon}
+\newunicodechar{υ}{\gupsilon}
+\newunicodechar{Φ}{\GPhi}
+\newunicodechar{φ}{\gphi}
+\newunicodechar{ϕ}{\gvarphi}
+\newunicodechar{Χ}{\GChi}
+\newunicodechar{χ}{\gchi}
+\newunicodechar{Ψ}{\GPsi}
+\newunicodechar{ψ}{\gpsi}
+\newunicodechar{Ω}{\GOmega}
+\newunicodechar{ω}{\gomega}
+
+\newunicodechar{ℕ}{\mathbb{N}}
+\newunicodechar{ℤ}{\mathbb{Z}}
+\newunicodechar{ℚ}{\mathbb{Q}}
+\newunicodechar{ℝ}{\mathbb{R}}
+\newunicodechar{ℂ}{\mathbb{C}}
+
+\newunicodechar{⁰}{^0}
+\newunicodechar{¹}{^1}
+\newunicodechar{²}{^2}
+\newunicodechar{³}{^3}
+\newunicodechar{⁴}{^4}
+\newunicodechar{⁵}{^5}
+\newunicodechar{⁶}{^6}
+\newunicodechar{⁷}{^7}
+\newunicodechar{⁸}{^8}
+\newunicodechar{⁹}{^9}
+
+\newunicodechar{₀}{_0}
+\newunicodechar{₁}{_1}
+\newunicodechar{₂}{_2}
+\newunicodechar{₃}{_3}
+\newunicodechar{₄}{_4}
+\newunicodechar{₅}{_5}
+\newunicodechar{₆}{_6}
+\newunicodechar{₇}{_7}
+\newunicodechar{₈}{_8}
+\newunicodechar{₉}{_9}
+
+\newunicodechar{•}{\ensuremath{\bullet}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≥}{\ensuremath{\ge}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{∃}{\ensuremath{\exists}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{∓}{\ensuremath{\pm}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\cross}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{→}{\ensuremath{\to}}
+\newunicodechar{∨}{\ensuremath{\vee}}
+\newunicodechar{∧}{\ensuremath{\wedge}}
+\newunicodechar{⊥}{\ensuremath{\bot}}
+\newunicodechar{¬}{\ensuremath{\lnot}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{⋅}{\ensuremath{\cdot}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{⊗}{\ensuremath{\otimes}}
+\newunicodechar{⊕}{\ensuremath{\oplus}}
+\newunicodechar{≔}{\ensuremath{\mathrel{:=}}}
+\newunicodechar{∼}{\ensuremath{\sim}}
+\newunicodechar{≃}{\ensuremath{\simeq}}
+\newunicodechar{⟨}{\ensuremath{\langle}}
+\newunicodechar{⟩}{\ensuremath{\rangle}}
+\newunicodechar{†}{\ensuremath{\dagger}}
+% (end)
+
+% Commands (fold)
+% Semantic formatting (fold)
+\renewcommand{\em}{\color{Emphasis}\itshape}
+\renewcommand{\emph}[1]{\textcolor{Emphasis}{\textit{#1}}}
+\newcommand{\term}[1]{\textcolor{Emphasis}{#1}}
+\newcommand{\book}[1]{\textit{#1}}
+\newcommand{\paper}[1]{\textit{#1}}
+\newcommand{\latin}[1]{\textit{#1}}
+% (end)
+
+% Abbreviations (fold)
+\let\sst\subset
+\let\sse\subseteq
+\let\ssne\subsetneq
+\let\divides\mid
+\let\ndivides\nmid
+\let\cross\times
+\let\iso\cong
+\let\<\langle
+\let\>\rangle
+% (end)
+
+% Sets, etc. (fold)
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\Z}{\mathbb{Z}}
+\newcommand*{\Q}{\mathbb{Q}}
+\newcommand*{\R}{\mathbb{R}}
+\newcommand*{\C}{\mathbb{C}}
+
+\newcommand*{\cat}[1]{\mathbf{#1}}
+% (end)
+
+% Functions (fold)
+\let\pilcrow\P
+\renewcommand{\P}{\ensuremath{\mathcal{P}}}
+% (end)
+
+% Operators (fold)
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+% (end)
+
+% Commands (fold)
+\newcommand{\id}{\mathrm{id}}
+% (end)
+
+% Math operators (fold)
+\DeclareMathOperator{\argmax}{arg\,max}
+\DeclareMathOperator{\argmin}{arg\,min}
+% (end)
+
+% Defining shorthand commands (fold)
+\makeatletter
+\newcommand*{\defall}[4]{%
+  \foreach \defall@l in {#3} {%
+    \expandafter\newcommand\csname#1\defall@l#2\endcsname{}%
+    \csxdef{#1\defall@l#2}{\noexpand#4{\defall@l}}}%
+}
+\makeatother
+%\defall{C}{}{A,...,Z}{\mathcal}
+%\defall{F}{}{A,...,Z}{\mathfrak}
+%\defall{F}{}{a,...,z}{\mathfrak}
+%\defall{BB}{}{A,...,Z}{\mathbb}
+% (end)
+% (end)
+% (end)
