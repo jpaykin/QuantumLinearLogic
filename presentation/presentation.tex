@@ -97,7 +97,31 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Qubit}
+\begin{frame}{Classical computation}
+  We have \term{bits}, that are either $0$ or $1$\par
+
+  \pause\vspace{3\bigskipamount}
+
+  (We're still intuitionistic!  Classical is the opposite of quantum.)
+\end{frame}
+
+\begin{frame}{Quantum computation}
+  We have \term{qubits}, which are always measured to be either $\ket{0}$ or
+  $\ket{1}$.
+
+  \pause\vspace{3\bigskipamount}
+
+  So what's different?
+  \begin{enumerate}
+    \item Superposition
+    \item Entanglement
+    \item Measurement
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Introduction to qubits}
+A qubit is a vector:
+
   \[ α\ket{0} + β\ket{1} \]
   \[ α,β ∈ ℂ \]
 
@@ -108,8 +132,10 @@ Measured as:
   \item $\ket{0}$ with probability $|α|²$
   \item $\ket{1}$ with probability $|β|²$
 \end{itemize}
+(So we also require that $|α|^2 + |β|^2 = 1$.)
 \medskip
 
+\large\color{Emphasis}
 \begin{center}
 No cloning!\\
 No deleting!
@@ -372,7 +398,7 @@ For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
         (cons (list str (concat "\\" str)) agda-input-user-translations)))
 (loop for str in '("begin" "end" "item" "usepackage" "emph" "def" "newcommand"
                    "par" "centerline" "text" "bigskip" "left" "right" "frac"
-                   "sqrt" "relax" "expandafter" "string"
+                   "sqrt" "relax" "expandafter" "string" "vskip" "vspace"
                    ; TiKZ
                    "node" "draw" "fill" "filldraw" "path" "text"
                    ; Beamer
