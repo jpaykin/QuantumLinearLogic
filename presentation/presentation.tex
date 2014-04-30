@@ -150,42 +150,55 @@ No deleting!
                                        text centered}]
   \def\sep{4}
   \path (0,0)     node {Linear logic}             ++(\sep,0)
-                  node {$⊗ \quad 1$ \\ $!$}       ++(\sep,0)
+                  node {$⊗ \quad I$ \\ $!$}       ++(\sep,0)
                   node {Vector spaces}            ;
+\end{tikzpicture}
+\pause
+\\~\\
+\begin{tikzpicture}[every node/.style={draw, circle,
+                                       text width=2.3cm,
+                                       text centered}]
+  \def\sep{4}
   \path (0,-\sep) node {Quantum logic}            ++(\sep,0)
-                  node {$⊗ \quad 1$\\$⊕ \quad 0$} ++(\sep,0)
+                  node {$⊗ \quad I$\\$⊕ \quad 0$} ++(\sep,0)
                   node {Hilbert spaces}           ;
 \end{tikzpicture}
 \end{center}
 \end{frame}
 
-\begin{frame}{Tensor product, in QM}
-  $\text{One qubit: } \qubit ≔ ℂ² / \,{∼}$
+\begin{frame}{Tensor product}
+  $\qubit ≔ (ℂ\timesℂ) / \,{∼}$
   \bigskip
   
-  Qubits are linear combinations over the basis:
-  \vspace{-\baselineskip}%
+  Linear combinations over bases:
+%  \vspace{-\baselineskip}%
   \begin{itemize}
-    \item One qubit: $\{\ket{0}, \ket{1}\}$ (in $\qubit$)
-    \item Two qubits: $\{\ket{00}, \ket{01}, \ket{10}, \ket{11}\}$ (in $\qubit ⊗
-          \qubit$)
+    \item for $\qubit$: $\{\ket{0}, \ket{1}\}$ 
+    \item for $\qubit ⊗ \qubit$: $\{\ket{00}, \ket{01}, \ket{10}, \ket{11}\}$
     \item …
   \end{itemize}
   \bigskip
   
-  \centerline{\emph{Two-qubit states are not two one-qubit states!}}
-  \bigskip
-  
-  A two-qubit state is \term{separable} if it has the form $(α₀\ket{0} +
-  α₁\ket{1}) ⊗ (β₀\ket{0} + β₁\ket{1})$; otherwise, it is \term{entangled}.
 \end{frame}
 
-\begin{frame}{Tensor product, categorically}
-  In $\cat{Hilb}$(ert spaces):
-  \begin{itemize}
-    \item $A ⊗ B$ is the regular tensor product (${⊗} : ℂ^m → ℂ^n → ℂ^{mn}$)
-    \item $1 = ℂ$
-  \end{itemize}
+%\begin{frame}{Tensor product, categorically}
+%  In $\cat{Hilb}$(ert spaces):
+%  \begin{itemize}
+%    \item $A ⊗ B$ is the regular tensor product (${⊗} : ℂ^m → ℂ^n → ℂ^{mn}$)
+%    \item $I = ℂ$
+%  \end{itemize}
+%\end{frame}
+
+\begin{frame}{\!Entanglement}
+
+  \centerline{\emph{Two-qubit states are not two one-qubit states!}}
+  \bigskip
+
+    A pair of qubits in $\qubit ⊗ \qubit$ is \term{separable}
+    if it has the form
+    \[ (α₀\ket{0} +  α₁\ket{1}) ⊗ (β₀\ket{0} + β₁\ket{1});\] 
+    otherwise, it is \term{entangled}.
+
 \end{frame}
 
 \begin{frame}[label=preparation]{\!Preparation of an entangled state}
@@ -240,11 +253,11 @@ No deleting!
 
 \begin{frame}{Scalars, categorically}
 \begin{center}
-A \term{scalar} is a morphism $1 → 1$\par
+A \term{scalar} is a morphism $I → I$\par
 
 \vspace{3\bigskipamount}
 
-For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
+For $f : A → B$ and $s : I → I$, $s • f : A ≃ A⊗I → B⊗I ≃ B$
 \end{center}
 \end{frame}
 
@@ -257,7 +270,7 @@ For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
 \begin{tikzpicture}[scale=0.155cm]
   \node (a ox b*) at (1,1) {$A ⊗ B^*$} ;
   \node (b ox b*) at (1,0) {$B ⊗ B^*$} ;
-  \node (1)       at (0,0) {$1$}       ;
+  \node (1)       at (0,0) {$I$}       ;
 
   \draw[->] (a ox b*) -- (1)       node[midway,above left] {$\coname{f}$} ;
   \draw[->] (a ox b*) -- (b ox b*) node[midway,right]      {$f ⊗ \id_{B^*}$} ;
@@ -267,7 +280,7 @@ For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
 \end{column}
 
 \begin{column}{0.5\textwidth}
-  Consider\\$\quad\ β_{i,j} : \qubit ⊗ \qubit^* → 1$\\where, for instance,
+  Consider\\$\quad\ β_{i,j} : \qubit ⊗ \qubit^* → I$\\where, for instance,
   \begin{align*}
     β_{0,0}(\ket{00}) &= 1 \\
     β_{0,0}(\ket{01}) &= 0 \\
@@ -281,12 +294,12 @@ For $f : A → B$ and $s : 1 → 1$, $s • f : A ≃ A⊗1 → B⊗1 ≃ B$
 
 \begin{frame}{$⊕$, categorically}
   For two qubits, the four possible measurement outcomes are
-  \[ β_{0,0},β_{0,1},β_{1,0},β_{1,1} : Q ⊗ Q^* → 1 \]
+  \[ β_{0,0},β_{0,1},β_{1,0},β_{1,1} : Q ⊗ Q^* → I \]
 
   \bigskip\bigskip
   
   We make $⊕$ be a biproduct, so we have
-  \[ ⟨β_{0,0},β_{0,1},β_{1,0},β_{1,1}⟩ : Q ⊗ Q^* → 1⊕1⊕1⊕1 \]
+  \[ ⟨β_{0,0},β_{0,1},β_{1,0},β_{1,1}⟩ : Q ⊗ Q^* → I⊕I⊕I⊕I \]
 \end{frame}
 
 \begin{frame}{Quantum teleportation}
