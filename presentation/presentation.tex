@@ -167,6 +167,7 @@ No deleting!
 \end{frame}
 
 \begin{frame}{Tensor product}
+  \pause
   $\qubit ≔ (ℂ\timesℂ) / \,{∼}$
   \bigskip
   
@@ -233,7 +234,7 @@ No deleting!
 \begin{tikzpicture}[scale=0.155cm]
   \node (a* ox a) at (0,0)  {$A^* ⊗ A$} ;
   \node (a* ox b) at (1,0)  {$A^* ⊗ B$} ;
-  \node (1)       at (0,-1) {$1$}       ;
+  \node (1)       at (0,-1) {$I$}       ;
 
   \draw[->] (1)       -- (a* ox a) node[midway,left]        {$η_A$} ;
   \draw[->] (a* ox a) -- (a* ox b) node[midway,above]       {$\id_{A^*} ⊗ f$} ;
@@ -257,7 +258,10 @@ A \term{scalar} is a morphism $I → I$\par
 
 \vspace{3\bigskipamount}
 
-For $f : A → B$ and $s : I → I$, $s • f : A ≃ A⊗I → B⊗I ≃ B$
+For $f : A → B$ and $s : I → I$:
+\[
+     s • f : A ≃ A⊗I \xrightarrow{f⊗s}  B⊗I ≃ B
+\]
 \end{center}
 \end{frame}
 
