@@ -1,3 +1,4 @@
+\makeatletter
 
 \newif\ifdraft
 \drafttrue
@@ -9,7 +10,13 @@
 \usepackage{microtype}
 \usepackage{fullpage}
 \usepackage{amsmath,amsfonts,amsthm}
+\usepackage{etoolbox}
+\usepackage{mathtools}
 
+\usepackage{newclude}
+
+\usepackage{natbib}
+\setcitestyle{authoryear,round,semicolon,aysep={,},yysep={,}}
 
 \usepackage{newunicodechar}
 \newunicodechar{ψ}{\psi}
@@ -18,8 +25,6 @@
 \let\bra\relax
 \let\ket\relax
 \usepackage{braket}
-
-\usepackage{mathtools}
 
 \usepackage[svgnames]{xcolor}
 
@@ -37,6 +42,7 @@
 
 \newcommand*{\latin}[1]{\textit{#1}}
 \newcommand*{\IE}{\latin{i.e.}}
+\newcommand*{\EG}{\latin{e.g.}}
 
 \usepackage[section]{placeins} % Floats should stay in their section
 
@@ -45,6 +51,7 @@
            , linktoc = all
            , pdfusetitle ]{hyperref}
 \usepackage[all]{hypcap}
+\usepackage{fix-natbib-hyperref} % From a TeX.SE answer
 \renewcommand*{\backrefalt}[4]{%
   \ifcase #1 %
     No citations.%
@@ -79,3 +86,5 @@
 
 % References
 \newcommand\Figure[1]{Figure~\ref{fig:#1}}
+
+\makeatother

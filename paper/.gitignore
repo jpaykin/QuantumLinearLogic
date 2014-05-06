@@ -1,0 +1,9 @@
+local.tex
+
+*.aux
+*.log
+*.pdf
+*.synctex.gz
+*.bbl
+*.blg
+*.brf

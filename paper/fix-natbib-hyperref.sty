@@ -1,0 +1,75 @@
+% Taken from Audrey's answer to IanSR's TeX.SE question ``natbib and hyperref
+% for (Author, Year) style produces two links'' (available at
+% http://tex.stackexchange.com/a/27235/1425).
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{fix-natbib-hyperref}[2011/09/02 Patches natbib's citation commands to provide one hyperlink]
+
+% Current citation \cite or \citet?
+\newbool{NAT@bool@patch}
+
+% Closing parenthesis already printed in hyperlink?
+\newtoggle{NAT@tog@close}
+
+% Flag \cite and \citet
+\pretocmd{\citet}
+  {\global\booltrue{NAT@bool@patch}}
+  {}% Do nothing if patch works
+  {}% Do nothing if patch fails
+
+\pretocmd{\cite}
+  {\global\booltrue{NAT@bool@patch}}
+  {}% Do nothing if patch works
+  {}% Do nothing if patch fails
+
+% Don't print postnote if already printed in hyperlink
+\newcommand\NAT@postnote[1]{%
+  \iftoggle{NAT@tog@close}
+    {}
+    {#1}}
+
+% Don't print closing bracket if already printed in hyperlink
+% NB: We have to reset this so that all brackets are printed in multi-citations
+\renewcommand\NAT@@close{%
+  \ifbool{NAT@bool@patch}
+    {\iftoggle{NAT@tog@close}
+       {\global\togglefalse{NAT@tog@close}}
+       {}}
+    {\ifNAT@par\NAT@close\fi}}
+
+% Patch main cite command to issue new postnote command
+\patchcmd{\NAT@citex}
+  {\else\NAT@cmt#2}
+  {\else\NAT@postnote{\NAT@cmt#2}}
+  {}% Do nothing if patch works
+  {}% Do nothing if patch fails
+
+% Patch main cite command to include postnote/closing bracket in hyperlink
+\patchcmd{\NAT@citex}
+  {\@citea\NAT@hyper@{%
+     \NAT@nmfmt{\NAT@nm}%
+     \hyper@natlinkbreak{\NAT@spacechar\NAT@@open\if*#1*\else#1\NAT@spacechar\fi}%
+       {\@citeb\@extra@b@citeb}%
+     \NAT@date}}
+  {\@citea\NAT@hyper@{%
+     \NAT@nmfmt{\NAT@nm}%
+     \hyper@natlinkbreak{\NAT@spacechar\NAT@@open\if*#1*\else#1\NAT@spacechar\fi}%
+       {\@citeb\@extra@b@citeb}%
+     \ifbool{NAT@bool@patch}
+       {\global\toggletrue{NAT@tog@close}%
+        \NAT@date%
+        \ifNAT@swa\else\if*#2*\else\NAT@cmt#2\fi\fi%
+        \NAT@close}
+       {\NAT@date}}}
+  {}% Do nothing if patch works
+  {}% Do nothing if patch fails
+
+% Reset flags after citation is printed
+\apptocmd{\NAT@citex}
+  {\global\boolfalse{NAT@bool@patch}%
+   \global\togglefalse{NAT@tog@close}}
+  {}% Do nothing if patch works
+  {}% Do nothing if patch fails
+
+% Don't break hyperlinks between name and year
+\renewcommand\hyper@natlinkbreak[2]{#1}

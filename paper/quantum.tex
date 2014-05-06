@@ -7,7 +7,7 @@
 
 When we change from classical\footnote{By \term{classical} here, we do not mean
 ``affirming the law of the excluded middle'', as in classical logic
- s.\ intuitionistic logic; we mean ``following the laws of traditional Newtonian
+vs.\ intuitionistic logic; we mean ``following the laws of traditional Newtonian
 physics'', as in classical physics vs.\ quantum mechanics.  This naming
 collision is unfortunate; however, in this paper, we do not discuss
 classical-logic--inspired computation, and so the term will always refer to the
@@ -18,8 +18,7 @@ behave much like bits: just as measuring a bit produces one of the two values
 $0$ or $1$, measuring a qubit produces one of the two values $\ket{0}$ or
 $\ket{1}$.  However, qubits behave very differently when \emph{not} being
 measured.  This is because qubits exhibit two properties that classical bits do
-not:\asz{\term{superposition} and \term{entanglement}. -- does this belong
-here?}
+not:\asz{\term{superposition} and \term{entanglement}.
 \begin{enumerate}
   \item \term{Superposition}: A qubit, prior to measurement, can be a
     \emph{combination} of $\ket{0}$ and $\ket{1}$.
@@ -60,7 +59,7 @@ $\ket{0}$.
 \subsection{Simulating a fair coin}\label{sec:fair-coin-hl}
 As we said above, a qubit may be in a \term{superposition} of $\ket{0}$ and
 $\ket{1}$; such states are called \term{mixed states}.  The simplest
-superposition is one which is ``$50\%$ $\ket{0}$ and $50\%$ $\ket{1}$''; to
+superpositions are those which are ``$50\%$ $\ket{0}$ and $50\%$ $\ket{1}$''; to
 produce this, we use the quantum \term{Hadamard gate} $H$, which takes both
 $\ket{0}$ and $\ket{1}$ to such mixed states.\footnote{It takes them to two
 \emph{different} such states -- see \asz{some later section}.}  Then, when this
@@ -372,6 +371,4 @@ we write this \[ \frac{1}{\sqrt{2}}\ket{0} + \frac{1}{\sqrt{2}}\ket{1} =
   (shell-command (concat
     "pdflatex -halt-on-error quantum.tex && "
     "osascript ~/misc/Skim-open-revert.scpt quantum.pdf &")))
-(local-set-key (kbd "C-c C-c") #'my-compile)
 (local-set-key (kbd "C-c C-l") #'my-compile)
-
