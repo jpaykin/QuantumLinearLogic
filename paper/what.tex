@@ -1,0 +1,57 @@
+From quantum mechanics, we learn that the world is defined by Hilbert spaces
+that evolve according to unitary transformations.\citeme{find something}
+
+\begin{definition}\label{def:hilbert-space}
+  \asz{This is a (slightly modified) quote from the Wikipedia article on Hilbert
+  spaces; we need something better.}  ``A \term{Hilbert space} $H$ is a complex
+  inner product space that is also a complete metric space with respect to the
+  distance function induced by the inner product.''
+\end{definition}
+
+\begin{definition}\label{def:conjugate-transpose}
+  The \term{conjugate transpose} of a matrix $M = (M_{i,j}) \in \C^{m \cross
+  n}$, written $M^\dag$, is given by taking the complex conjugate of each
+  element of $M^\T$; in other words, $M^\dag = (\overline{M_{j,i}})$.
+\end{definition}
+
+\begin{definition}\label{def:unitary-matrix}
+  A \term{unitary matrix} is a square matrix $U \in \C^{n \cross n}$ such that
+  $U^\dag U = I$.\asz{Wikipedia defines a unitary \emph{transformation} as an
+  isomorphism of Hilbert spaces, or a linear transformation that preserves the
+  inner product.  Should we mention this?}
+\end{definition}
+
+We also need to briefly touch on notation.  We adopt the physicists' convention
+of writing $\ket{\psi}$ for an element of a Hilbert space $H$; this is referred
+to as a \term{ket}.  The dual of a ket is a \term{bra}, written $\bra{\phi}$,
+which is an element of $H$'s dual space.  When working with vectors in $\C^n$,
+as we will be doing, we can define $\bra{\psi} = \ket{\psi}^\dag$: where kets
+are column vectors, bras are row vectors.  The notation $\braket{\phi | \psi}$
+then denotes the inner product of $\ket{\phi}$ and $\ket{\psi}$, which is just
+matrix multiplication in the case of $\C^n$.  Importantly, this means that we
+have now also adopted the physicist's convention that the inner product is
+linear in its \emph{second} argument, and conjugate-linear in its \emph{first}.
+
+Fortunately, for quantum computation, we are only interested in very particular
+Hilbert spaces.  These are the spaces that arise from considering the single
+fundamental primitive datum of quantum computation: the \term{qubit}.  A qubit
+is a \emph{qu}antum \emph{b}it: when we have a classical bit, we know that it is
+either $0$ or $1$; similarly, when we measure a qubit, we know that we will get
+either $\ket{0}$ or $\ket{1}$.  The difference between a qubit and a bit lies in
+the word ``measure'': as long as we \emph{don't} measure a qubit, it can take on
+all sorts of crazy states.  Formally, we can represent a qubit as an element of
+$\C^2$ subject to some normalization constraints:
+
+\begin{definition}\label{def:qubit}
+  A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
+  such that $|a|^2 + |b|^2 = 1$.  We define $\ket{0}$ and $\ket{1}$ to be the
+  basis vectors \[ \ket{0} = \vector{1 0} \text{ and } \ket{1} = \vector{0
+  1}, \] and will thus often write the above qubit as $a\ket{0} + b\ket{1}$.
+\end{definition}
+
+Now that we have this definition, we can define our first unitary operator:
+bitwise negation, which we define as \[
+  X = \begin{pmatrix} 0 & 1 \\
+                      1 & 0 \end{pmatrix}.
+\]  It is easy to see that $X\ket{0} = \ket{1}$ and $X\ket{1} = \ket{0}$,
+justifying the name bitwise negation.
