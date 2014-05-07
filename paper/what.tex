@@ -11,7 +11,8 @@ that evolve according to unitary transformations.\citeme{find something}
 \begin{definition}\label{def:conjugate-transpose}
   The \term{conjugate transpose} of a matrix $M = (M_{i,j}) \in \C^{m \cross
   n}$, written $M^\dag$, is given by taking the complex conjugate of each
-  element of $M^\T$; in other words, $M^\dag = (\overline{M_{j,i}})$.
+  element of $M^\T$; in other words, $M^\dag = (\overline{M_{j,i}})$.  A matrix
+  $M$ is \term{Hermitian} if $M = M^\dag$.
 \end{definition}
 
 \begin{definition}\label{def:unitary-matrix}
@@ -46,12 +47,52 @@ $\C^2$ subject to some normalization constraints:
   A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
   such that $|a|^2 + |b|^2 = 1$.  We define $\ket{0}$ and $\ket{1}$ to be the
   basis vectors \[ \ket{0} = \vector{1 0} \text{ and } \ket{1} = \vector{0
-  1}, \] and will thus often write the above qubit as $a\ket{0} + b\ket{1}$.
+  1}, \] and will thus often write the above qubit as $a\ket{0} + b\ket{1}$.  We
+  call $a$ and $b$ \term{probability amplitudes}, for reasons which will become
+  clearer later.
 \end{definition}
 
 Now that we have this definition, we can define our first unitary operator:
 bitwise negation, which we define as \[
   X = \begin{pmatrix} 0 & 1 \\
                       1 & 0 \end{pmatrix}.
-\]  It is easy to see that $X\ket{0} = \ket{1}$ and $X\ket{1} = \ket{0}$,
-justifying the name bitwise negation.
+\] Seeing that $X$ is unitary is straightforward, since it is both self-inverse
+and Hermitian.  It is also easy to see that $X\ket{0} = \ket{1}$ and $X\ket{1} =
+\ket{0}$, justifying the name bitwise negation.  But qubits are more than just
+zeroes and ones.  If we apply bitwise negation to an arbitrary qubit $a\ket{0} +
+b\ket{1}$, we get \[
+  X(a\ket{0} + b\ket{1}) =
+  \begin{pmatrix}
+    0 & 1 \\
+    1 & 0
+  \end{pmatrix}
+  \vector{a b} =
+  \vector{b a} =
+  b\ket{0} + a\ket{1}.
+\]  Thus, bitwise negation swaps the probability amplitudes of an arbitrary
+qubit.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} & \gate{X} & \rstick{\ket{1}} \qw
+  }}
+  \caption{The quantum circuit diagram for applying the bitwise not operator to
+    a single qubit; here, it is applied to the value $\ket{0}$.}
+  \label{qcd:bitwise-not-0}
+\end{figure}
+
+We can also represent applying the unitary transformation $X$ diagrammatically
+through the use of a \term{quantum circuit diagram}, such as we see in
+\cref{qcd:bitwise-not-0}.  The horizontal lines are \term{wires}, and are read
+from left to right.  A box which spans some wires and contains a term is a
+\term{gate}; the effect of this gate is given by the unitary matrix within the
+box, and the whole thing is to be read as applying that matrix to the given
+qubits.\footnotemark{}  The qubit labels at the left ends of the wires are the
+input values; the qubit labels at the right end are the output values.
+Sometimes, we will give a qubit a name as well as an initial value; the name
+will be placed even further left.
+
+\footnotetext{Our mathematically inclined readers might notice here that this is
+  reminiscent of category theoretic diagrams, including composition happening in
+  diagrammatic order.  This is indeed the case, which will be explained in more
+  detail in \cref{sec:how}.}
