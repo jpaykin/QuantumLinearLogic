@@ -7,11 +7,29 @@
 \usepackage{lmodern}
 \usepackage{microtype}
 \usepackage{fullpage}
-\usepackage{amsmath,amsfonts,amsthm}
 \usepackage{etoolbox}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{thmtools}
 \usepackage{mathtools}
 
+% The newclude package tries to define this command (but only when thmtools is
+% included?)
+\makeatletter
+\def\restore@saved@for@newclude{%
+  \undef\save@for@newclude
+  \undef\restore@saved@for@newclude
+}
+\def\save@for@newclude#1{
+  \cslet{save@old@\string#1}#1
+  \let#1\relax
+  \apptocmd\restore@saved@for@newclude
+    {\letcs#1{save@old@\string#1}\csundef{save@old@\string#1}}%
+    {}{}
+}
+\save@for@newclude\g@prependto@macro
 \usepackage{newclude}
+\restore@saved@for@newclude
+\makeatother
 
 \usepackage{natbib}
 \setcitestyle{authoryear,round,semicolon,aysep={,},yysep={,}}
@@ -60,8 +78,15 @@
 
 \makeatletter
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
+\declaretheoremstyle[
+  headfont=\normalfont\bfseries,
+  notefont=\normalfont\bfseries, notebraces={(}{)},
+  bodyfont=\normalfont\itshape
+]{myplain}
+
+\declaretheorem[style=myplain]{theorem}
+\declaretheorem[style=myplain]{lemma}
+\declaretheorem[style=myplain]{definition}
 
 \newcommand{\id}{\operatorname{id}}
 \newcommand{\unit}{\mathbf{1}}
