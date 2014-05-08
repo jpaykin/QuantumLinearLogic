@@ -50,9 +50,10 @@ $\C^2$ subject to some normalization constraints:
   A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
   such that $|a|^2 + |b|^2 = 1$.  We define $\ket{0}$ and $\ket{1}$ to be the
   basis vectors \[ \ket{0} = \vector{1 0} \text{ and } \ket{1} = \vector{0
-  1}, \] and will thus often write the above qubit as $a\ket{0} + b\ket{1}$.  We
-  call $a$ and $b$ \term{probability amplitudes}, for reasons which will become
-  clear later.
+  1}, \] and will thus often write the above qubit as $a\ket{0} + b\ket{1}$.
+  The general, non-basis, qubit states, where $a \ne 0$ and $b \ne 0$, are
+  termed \term{superpositions}.  We call the coefficients $a$ and $b$
+  \term{probability amplitudes}, for reasons which will become clear later.
 \end{definition}
 
 Now that we have this definition, we can define our first unitary operator:
@@ -84,13 +85,63 @@ qubit.
   \label{qcd:bitwise-not-0}
 \end{figure}
 
-We can also represent applying the unitary transformation $X$ diagrammatically
-through the use of a \term{quantum circuit diagram}, such as we see in
-\cref{qcd:bitwise-not-0}.  The horizontal lines are \term{wires}, and are read
-from left to right.  A box which spans some wires and contains a term is a
+Despite this ability to apply bitwise negation to non-basis vectors, it is still
+essentially a traditional computational operation.  Can we define an operation
+that will give us access to the more interesting qubit states we have opened
+ourselves up to?  For this, we can define the \term{Hadamard transform} \[
+  H = \frac{1}{\sqrt{2}}
+      \begin{pmatrix} 1 & \pos1 \\
+                      1 & -1 \end{pmatrix}.
+\] This matrix is also unitary since it is also self-inverse and Hermitian,
+although this time we need a scaling factor of $1/\sqrt{2}$ to ensure that.  The
+Hadamard transform will turn either of the basis vectors $\ket{0}$ or $\ket{1}$
+into evenly-weighted superpositions of $\ket{0}$ and $\ket{1}$:
+\begin{gather*}
+  H\ket{0}
+  = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & \pos1 \\ 1 & -1 \end{pmatrix}
+    \vector{1 0}
+  = \frac{1}{\sqrt{2}} \vector{1 1}
+  = \frac{\ket{0} + \ket{1}}{\sqrt{2}}
+\intertext{and}
+  H\ket{1}
+  = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & \pos1 \\ 1 & -1 \end{pmatrix}
+    \vector{0 1}
+  = \frac{1}{\sqrt{2}} \vector{\pos1 -1}
+  = \frac{\ket{0} - \ket{1}}{\sqrt{2}}.
+\end{gather*}
+In the general case, we have \[
+  H(a\ket{0} + b\ket{1})
+  = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & \pos1 \\ 1 & -1 \end{pmatrix}
+    \vector{a b}
+  = \vector{a+b a-b}
+  = \frac{(a+b)\ket{0} + (a-b)\ket{1}}{\sqrt{2}},
+\]
+so the Hadamard transform distributes the probability amplitudes of an arbitrary
+qubit across both of its basis components.
+
+\newbox\BA
+\setbox\BA=\hbox{$\ket{0}$}
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} &
+    \gate{H} &
+    \rstick{\displaystyle\frac{\ket{0}+\ket{1}}{\sqrt{2}}} \qw
+  }}
+  \caption{The quantum circuit diagram for applying the Hadamard transform to a
+    single qubit; here, it is applied to the value $\ket{0}$.}
+  \label{qcd:hadamard-0}
+\end{figure}
+
+We can also represent applying unitary transformations diagrammatically through
+the use of a \term{quantum circuit diagram}, such as we see in
+\cref{qcd:bitwise-not-0,qcd:hadamard-0}; \cref{qcd:bitwise-not-0} represents the
+computation $X\ket{0} = \ket{1}$ and \cref{qcd:hadamard-0} represents the
+computation $H\ket{0} = (\ket{0} + \ket{1})/\sqrt{2}$.  In these diagrams, the
+horizontal lines are \term{wires} representing single qubits, and are read from
+left to right.  A box which spans some wires and contains a term is a
 \term{gate}; the effect of this gate is given by the unitary matrix within the
 box, and the whole thing is to be read as applying that matrix to the given
-qubits.\footnotemark{}  The qubit labels at the left ends of the wires are the
+qubits.\footnotemark{} The qubit labels at the left ends of the wires are the
 input values; the qubit labels at the right end are the output values.
 Sometimes, we will give a qubit a name as well as an initial value; the name
 will be placed even further left.
@@ -102,12 +153,12 @@ will be placed even further left.
 
 This brings us nicely to the next property we must discuss: we talk above about
 wire\emph{s}, plural.  But we haven't yet said how to define multi-qubit states!
-Given two qubits $\ket{a}$ and $\ket{b}$, where $\ket{a} = a_0\ket{0} +
-a_1\ket{1}$ and $\ket{b} = b_0\ket{0} + b_1\ket{1}$, how can we talk about the
-system consisting of both $\ket{a}$ and $\ket{b}$?  To those of us used to the
-traditional Newtonian worldview, this is an odd question; can't we just use the
-pair $(\ket{a},\ket{b})$?  After all, vector spaces are closed under the
-Cartesian product.
+Given two qubits $\ket{\phi}$ and $\ket{\psi}$, where $\ket{\phi} =
+\phi_0\ket{0} + \phi_1\ket{1}$ and $\ket{\psi} = \psi_0\ket{0} + \psi_1\ket{1}$,
+how can we talk about the system consisting of both $\ket{\phi}$ and
+$\ket{\psi}$?  To those of us used to the traditional Newtonian worldview, this
+is an odd question; can't we just use the pair $(\ket{\phi},\ket{\psi})$?  After
+all, vector spaces are closed under the Cartesian product.
 
 But here, too, quantum mechanics departs from our intuitions.  In quantum
 mechanics, when we combine two state spaces, we take their \emph{tensor} product
@@ -191,9 +242,64 @@ finite-dimensional vector spaces that we care about.
       u_{2n}v_{1q} & u_{2n}v_{2q} & \icdots & u_{2n}v_{pq} &
       \cdots &
       u_{mn}v_{1q} & u_{mn}v_{2q} & \icdots & u_{mn}v_{pq}
-    \end{array}\right).% \\ \in \C^{mp \cross nq} % Add back in if there's space
+    \end{array}\right) \\ \in \C^{mp \cross nq}.
   \end{gather*}
 
-  \footnotetext{Solely for space reasons.}  
+  \footnotetext{Solely for space reasons.}
 \end{definition}
+
+Thus, when we are considering $n$-qubit systems, we find ourselves in a
+$2^n$-dimensional complex vector space.  The basis vectors in this space are the
+tensor products of the basis vectors in the original space; for instance, a
+two-qubit system has the four basis vectors \[
+\begin{array}{c@{\qquad}c}
+  \ket{00} = \ket{0} \tensor \ket{0} =
+  \vector{1 0} \tensor \vector{1 0} = \vector{1 0 0 0} &
+  \ket{01} = \ket{0} \tensor \ket{1} =
+  \vector{1 0} \tensor \vector{0 1} = \vector{0 1 0 0} \\[7ex]
+  \ket{10} = \ket{1} \tensor \ket{0} =
+  \vector{0 1} \tensor \vector{1 0} = \vector{0 0 1 0} &
+  \ket{11} = \ket{1} \tensor \ket{1} =
+  \vector{0 1} \tensor \vector{0 1} = \vector{0 0 0 1}
+\end{array}
+\]  Conveniently, this means that we can take the basis vector $\ket{b_{n-1}
+\cdots b_0}$, where each of the $b_i$ are either $0$ or $1$, and read the name
+$b_{n-1} \cdots b_0$ as a binary number $B$; if we do this, we find that this
+basis vector is the one containing $0$s everywhere except for a $1$ at
+(zero-based) index $B$.
+
+The tensor product has another important property besides increasing the
+dimension of the vector spaces involved multiplicatively instead of additively.
+We know that given vector spaces $U$ and $V$, all elements of $U \cross V$ are
+of the form $(u,v)$ for some $u \in U$ and $v \in V$.  But when we take the
+tensor product of $U$ and $V$ instead, we find that there exist elements of $U
+\tensor V$ that aren't of the form $u \tensor v$ for any $u \in U$ and $v \in
+V$.  We call states of the form $u \tensor v$ \term{separable}, and all other
+states \term{entangled}.
+
+\begin{definition}[Separable and entangled states]%
+\label{def:separable-entangled}
+  A multi-qubit system is \term{separable} if it can be written as the tensor
+  product of multiple smaller systems, and \term{entangled} if it cannot.  A
+  state may be separable in one context but not in another; for instance, given
+  the entangled two-qubit states $\ket{\phi}$ and $\ket{\psi}$, we may say that
+  $\ket{\phi\psi}$ is entangled when thinking about one-qubit states, but that
+  it is separable when thinking about two-qubit states.
+\end{definition}
+
+This is all well and good, but how do we produce entangled states?  To do this,
+we need to introduce our first multi-qubit operator: the \term{controlled not}
+gate, also known as the \term{cnot} gate.  You might expect a more traditional
+choice like an and gate or an or gate.  However, recall that all quantum
+operators must be unitary, and hence take $n$ qubits to $n$ qubits; ``and'' and
+``or'' lose information.  The controlled not gate takes two qubits as input: a
+control qubit and a target qubit.  The control qubit is unmodified; the second
+qubit is bitwise negated if the control qubit is $\ket{1}$, and unmodified if
+the control qubit is $\ket{0}$.  We can define this with the matrix \[
+  \CNOT = \begin{pmatrix} 1 & 0 & 0 & 0 \\
+                          0 & 1 & 0 & 0 \\
+                          0 & 0 & 0 & 1 \\
+                          0 & 0 & 1 & 0 \end{pmatrix}.
+\] Seeing that $\CNOT$ is unitary is straightforward, since (like $X$) it is
+both self-inverse and Hermitian.
 
