@@ -1,4 +1,4 @@
-quantum.pdf: quantum.tex preamble.tex category.tex
+paper.pdf: paper.tex preamble.tex what.tex when.tex where.tex why.tex how.tex
 	pdflatex $<
 	bibtex $(basename $<)
 	pdflatex $<

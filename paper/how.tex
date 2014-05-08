@@ -1,0 +1,437 @@
+So far we have been talking about quantum computation in the physicist's language
+of quantum mechanics---superposition, measurement, and wires. 
+But if we want quantum computation to be an area of study for the sake of
+computation itself, then computer scientists need to find a way to align
+the language of quantum mechanics with the language of programming.
+The approach we describe in this section is the work of \cite{abramsky2009categorical},
+which axiomatizes the major properties of quantum mechanics and logic as a categorical model.
+In this section we will provide an overview of their theory and use it to describe the
+teleportation algorithm given in \Section{where}.
+
+Category theory is a powerful tool for describing the algebraic structure of
+various mathematical constructions. Category theory allows for axiomatic descriptions
+of mathematical structures and relationships between structures. These axiomatic
+properties can then be instantiated with concrete mathematical structures, like sets,
+vector spaces, algebras, et cetera. 
+
+In connection to the theory of computation, category theory can be used as a semantic
+domain. Given a programming language, a categorical semantics is a categorical axiomatization
+that is sound with respect to the language's operational semantics. 
+Thus the language might have many different operational semantics that fit within the same
+categorical framework. 
+The benefit of axiomatization is that it illuminates exactly the mathematical structure
+outlined by the language, and no more.
+
+There is still much debate over the correct \emph{langauge} to describe quantum computation,
+but the semantic domain is very well understood---Hilbert spaces.
+Is there any reason to leave this familiar space and move to the abstract domain of category theory?
+The hope is that by examining the fundamental structure of Hilbert spaces that makes it possible
+to encode quantum algorithms, it will be easier to understand what a language for
+quantum computation should look like. It is a step for working backwards, not forwards,
+on the categorical semantic chain.
+
+When developing categorical notions, we will use the category $\Hilb$ of finite-dimensional
+hilbert spaces as a running example. The objects are finite-dimensional hilbert spaces,
+and the morphisms are linear transformations. \jp{Not necessarily unitary...}
+
+A certain amount of familiarity with category theory is expected: objects, morphisms,
+functors and natural transformations.
+
+\subsection{Symmetric Monoidal Categories and the No-Cloning Theorem}
+
+\begin{definition}
+A symmetric monoidal category $C$ consists of a bifunctor $\tensor$
+and a unit $I$, along with natural isormorphisms:
+\begin{align*}
+    \text{Associativity:}&\qquad 
+    \alpha_{A,B,C} : A \tensor (B \tensor C) \rightarrow (A \tensor B) \tensor C \\
+    \text{Left and right units:}&\qquad 
+    \lambda_A : I \tensor A \rightarrow A \text{ and } \rho_A : A \tensor I \rightarrow A \\
+    \text{Symmetry:}&\qquad 
+    \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
+\end{align*}
+In addition, the monoidal structure must commute with the isomorphisms in 
+various ways \jp{Cite}.
+\end{definition}
+
+\subsubsection*{Example}
+The category $\Hilb$ is symmetric monoidal, where the tensor product
+is the regular tensor product on vector spaces. Notice that $\tensor$ is
+in fact a functor---it is defined both on objects ($H_1 \tensor H_2$ is a hilbert space)
+and on morphisms
+
+\jp{Move to What section}
+A few properties of this tensor
+product are:
+\begin{enumerate}
+    \item If $B_1$ is a basis of $H_1$ and $B_2$ is a basis of $H_2$
+    then $B_1 \times B_2$ is a basis for $H_1 \tensor H_2$.
+    \item For arbitrary $u_1 \in H_1$ and $u_2 \in H_2$, 
+    $u_1 \tensor u_2$ is the equivalence class in $H_1 \tensor H_2$ induced
+    by bilinearity:
+    \begin{align*}
+        \alpha(u_1 \tensor u_2) &= (\alpha u_1) \tensor u_2 \\
+        \alpha(u_1 \tensor u_2) &= u_1 \tensor (\alpha u_2) \\
+        (u_1 \tensor v) + (u_2 \tensor v) &= (u_1 + u_2) \tensor v \\
+        (u \tensor v_1) + (u \tensor v_2) &= u \tensor (v_1 + v_2)
+    \end{align*}
+\end{enumerate}
+The unit of the tensor is the underlying field, with the basis $B = \{ \unit \}$.
+
+The tensor can be thought of as a new kind of composition. Traditional
+sequential composition is given by the categorical composition of two morphisms:
+\tikzstyle{boxmode} = [draw,minimum height=2em, minimum width=2em]
+\begin{center} \begin{tikzpicture}
+    \node[boxmode] (f) at (3,0) {$f$};
+    \node[boxmode] (g) at (6,0) {$g$};
+
+    \draw (0,0) -- (f);
+    \draw (f) -- (g);
+    \draw (g) -- (9,0);
+\end{tikzpicture} \end{center}
+whereas parallel composition is the result of tensoring two morphisms together:
+\begin{center} \begin{tikzpicture}
+    \node[boxmode] (f) at (3,1) {$f$};
+    \node[boxmode] (g) at (3,-0.5) {$g$};
+
+    \draw (0,1) -- (f);
+    \draw (f) -- (6,1);
+    \draw (0,-0.5) -- (g);
+    \draw (g) -- (6,-0.5);
+\end{tikzpicture} \end{center}
+
+
+Along with monoidal categories comes a range of categorical structures tailored
+to the monoidal structure. Relevent here are functors and natural transformations.
+
+\begin{definition}
+A symmetric monoidal functor is a functor $F : C \Rightarrow D$ between two symmetric
+monoidal categories, along with a morphism
+\[ m_I^F : I^D \rightarrow F I^C \]
+in D and a natural transformation
+\[ m_{A,B}^F : F A \tensor F B \rightarrow F(A \tensor B). \]
+Again, these morphisms must commute with the monoidal structures in $C$ and $D$
+in certain ways not outlined here. 
+\end{definition}
+
+A monoidal natural transformation between two symmetric monoidal functors
+is a natural transformation that commutes with the monoidal components $m_I$ and $m_{A,B}$.
+
+\jp{Move to earlier section?}
+The no-cloning theorem says there is no way to produce two copies of a single 
+arbitrary quantum state. To be more precise, the no-cloning theorem states that
+there is no unitary transformation which can duplicate every possible quantum state.
+
+\begin{theorem}[No-Cloning (cite)]
+    There is no unitary transformation acting on qubits as follows:
+    \[ U(\ket{0}\tensor\ket{\varphi}) = \ket{\varphi}\tensor\ket{\varphi}.\footnotemark \]
+    \footnotetext{Unitary transformations are, in traditional quantum mechanics,
+    always square matrices, so in this case we ``pad'' the transformation with an
+    arbitrary \jp{???} state.}
+\end{theorem}
+\begin{proof}
+    Suppose there were such a transformation. We may expand an arbitrary $\ket{\varphi}$
+    as $\varphi = \alpha\ket{0} + \beta\ket{1}$. By the definition of $U$, we know
+    \begin{align*} 
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \ket{\varphi} \tensor \ket{\varphi} \\
+        &= (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1}) \\
+        &= \alpha^2 \ket{00} + \alpha\beta\ket{01} + \alpha\beta\ket{10} + \beta^2\ket{11}.
+    \end{align*}
+    However, since all unitary transformations are necessarily linear, we can also compute
+    \begin{align*}
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \alpha U(\ket{0} \tensor \ket{0}) + \beta U(\ket{0} \tensor \ket{1}) \\
+        &= \alpha \ket{00} + \beta \ket{11}.
+    \end{align*}
+    These two expansions are unequal, thus we have reached a contradiction. 
+\end{proof}
+
+So what does this have to do with monoidal categories? 
+The use of linearity in the proof of the no-cloning theorem is exactly the overlap.
+Without additional structure, monoidal categories do not allow arbitrary
+morphisms $A \rightarrow A \tensor A$. \cite{abramsky2009categorical}
+prove the corresponding property holds for their entire categorical model,
+but for now it suffices to say that the structure added in the remainder
+of this section does not allow arbitrary duplication on the monoidal structure.
+
+\subsection{Compact Closed Categories: Names and Conames}
+
+\begin{definition}
+A symmetric monoidal category is \emph{compact closed} if every object $A$ is
+equipped with a dual object $A^*$, along with morphisms
+\[ \eta_A : I \rightarrow A^* \tensor A \qquad\text{and}\qquad
+   \varepsilon_A : A \tensor A^* \rightarrow I \]
+provided
+\[
+    A \xrightarrow{\rho_A^{-1}} A \tensor I
+    \xrightarrow{\id_A \tensor \eta_A} A\tensor(A^* \tensor A)
+    \xrightarrow{\alpha_{A,A^*,A}} (A \tensor A^*)\tensor A
+    \xrightarrow{\varepsilon_A \tensor \id_A} I \tensor A
+    \xrightarrow{\lambda_A} A
+\]
+is the identity morphism on $A$, and
+\[
+    A \xrightarrow{\lambda_{A^*}^{-1}} I \tensor A^*
+    \xrightarrow{\eta_A \tensor \id_{A^*}} (A^* \tensor A) \tensor A^*
+    \xrightarrow{\alpha_{A^*,A,A^*}^{-1}} A^* \tensor (A \tensor A^*) 
+    \xrightarrow{\id_{A^*} \tensor \varepsilon_A} A^* \tensor I
+    \xrightarrow{\rho_{A^*}} A^*
+\]
+is the identity morphism on $A^*$.
+\end{definition}
+
+\subsubsection*{Example} In $\Hilb$, the dual
+of a Hilbert space $H$ is the space of continuous linear maps from $H$
+to the underlying field. For a basis element $b$, let $\delta_b$
+be the linear map defined on basis elements as follows:
+\[ \delta_b(b') = \begin{cases}
+    1 &b'=b \\
+    0 &b' \neq b
+\end{cases}\]
+For a basis $B$ of $H$, the set $\overline{B} = \{\delta_b \mid b \in B\}$
+is a basis for $H^*$. Then we can define $\eta$ and $\varepsilon$ as follows:
+\begin{align*}
+    \eta_H(\unit) &= \sum_{b \in \basis(H)} \delta_b \tensor b \\
+    \varepsilon_H(b \tensor \delta_{b'}) &= 
+        \begin{cases}   
+            \unit &b = b' \\
+            \zero &b \neq b'
+        \end{cases}
+\end{align*}
+
+From the unit $\eta$ and counit $\varepsilon$ we can induce a notion of currying
+on arbitrary morphisms.
+
+\begin{definition}
+    Let $f : A \rightarrow B$ be a morphism in a compact closed category. The name of $f$,
+    denoted $\lift f$, is
+    \begin{align*}
+        \lift f = 1 
+         \xrightarrow{\eta_A} A^* \tensor A
+         \xrightarrow{\id_{A^*} \tensor f} A^* \tensor B
+    \end{align*}
+    The coname of $f$, denoted $\llower f$, is
+    \begin{align*}
+        \llower f = A \tensor B^*
+        \xrightarrow{f \tensor \id_{B^*}} B \tensor B^*
+        \xrightarrow{\varepsilon_B} 1
+    \end{align*}
+\end{definition}
+Graphically, we denote the name and coname of $f$ as
+\tikzstyle{namenode} = [draw,shape border rotate=180, 
+                        isosceles triangle,
+                        node distance=2cm, minimum width=3em]
+\tikzstyle{conamenode} = [draw,shape border rotate=0,
+                        isosceles triangle,
+                        node distance=2cm, minimum width=3em]
+
+\begin{center} \begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
+
+    \node[namenode] (name) at (0,1) {$f$};
+    \node[invisible] (destination) at (2,1) {};
+    \path (name.north east) edge [above] node {$A^*$} (destination.north west);
+    \path (name.south east) edge [above] node {$B$}   (destination.south west);
+
+    \node[conamenode] (coname) at (0,-1) {$f$};
+    \node[invisible] (source) at (-2,-1) {};
+    \path (source.north east) edge [above] node {$A$} (coname.north west);
+    \path (source.south east) edge [above] node {$B^*$} (coname.south west);
+\end{tikzpicture} \end{center}
+respectively.
+In fact, it is also the case that every morphism $g : I \rightarrow A^* \tensor B$ can
+be ``uncurried'', meaning that it is equivalent to some $\lift{f}$ for $f:A \rightarrow B$.
+Similarly, all morphisms $A \tensor B^* \rightarrow I$ are equivalent to some coname.
+In the case of $\eta$ and $\varepsilon$, we have
+\[ \eta_A = \lift{\id_A} \qquad\text{and}\qquad \varepsilon_A = \llower{\id_A}. \]
+
+From the commutativity of the unit and counit, we can then induce certain properties of the
+$\lift{-}$ and $\llower{-}$ operations, for example those in \Figure{names}.
+
+\begin{figure}
+\begin{tabular}{cccc}
+Absorbtion
+&
+\begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
+    \node[namenode] (f) at (1,1) {$f$};
+    \node[boxmode]  (g) at (3,0.66) {$g$};
+    \node[invisible] (target) at (5,1) {};
+    \path (f.north east) edge [above] node {$A^*$}  (target.north west);
+    \path (f.south east) edge [above] node {$B$}    (g);
+    \path (g)            edge [above] node {$C$}    (target.south west);
+\end{tikzpicture}
+&
+$=$
+&
+\begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=2.8em}}
+    \node[namenode] (gf) at (1,1) {$g \circ f$};
+    \node[invisible] (target) at (5,1) {};
+    \path (gf.north east) edge [above] node {$A^*$}  (target.north west);
+    \path (gf.south east) edge [above] node {$C$}    (target.south west);
+\end{tikzpicture}
+\\ \\
+Compositionality
+&
+\begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
+    \node[invisible] (source)   at (0,.67)    {};
+    \node[namenode]  (g)        at (2,0)    {$g$};
+    \node[conamenode](f)        at (4,.67)    {$f$};
+    \node[invisible] (target)   at (6,0)    {};
+
+    \path (source.north east) edge [above] node {$A$} (f.north west);
+    \path (g.north east) edge [above] node {$B^*$} (f.south west);
+    \path (g.south east) edge [above] node {$C$} (target.south west);
+\end{tikzpicture}
+&
+$=$
+&
+\begin{tikzpicture}
+    \node[boxmode] (f) at (2,0) {$f$};
+    \node[boxmode] (g) at (4,0) {$g$};
+    \path (0,0) edge [above] node {$A$} (f);
+    \path (f)   edge [above] node {$B$} (g);
+    \path (g)   edge [above] node {$C$} (6,0);
+\end{tikzpicture}
+
+\end{tabular}
+\caption{Commutativity of names and conames}
+\label{fig:names}
+\end{figure}
+
+
+\subsection{Strong Compact Closure and the Inner Product}
+
+So far we have not touched on the notion of inner product in terms of the category theory.
+The inner product in the category of finite-dimensional hilbert spaces is sequilinear,
+which means it is linear in the second argument and conjugate-linear in the first argument.
+In other words,
+\[ \Braket{\alpha \varphi_1 + \beta \varphi_2 \mid \psi} 
+   = \overline{\alpha} \Braket{\varphi_1 \mid \psi} + \overline{\beta} \Braket{\varphi_2 \mid \psi}
+\]
+where $\overline{\alpha}$ is the complex conjugate of $\alpha$.
+
+
+\begin{definition}
+    A dagger category is a category $C$ equipped with a contravariant functor $(-)^\dagger$ 
+    which is the identity on objects, and such that 
+    \[ (g \circ f)^\dagger = f^\dagger \circ g^\dagger \qquad\text{and}\qquad f^{\dagger\dagger} = f. \]
+\end{definition}
+
+A morphism $f$ is called \emph{unitary} if $f$ is an isomorphism and $f^{-1}=f^\dagger$.
+
+\subsubsection*{Example} In $\Hilb$, $(-)^\dagger$ is the conjugate-transpose.
+
+\begin{definition}
+    A strongly compact closed category is a dagger category which is also compact closed,
+    where $\alpha$, $\lambda$, $\rho$ and $\sigma$ are all componentwise unitary transformations,
+    where the dagger is a strong monoidal functor, meaning:
+    \[ (f \tensor g)^\dagger = f^\dagger \tensor g^\dagger; \]
+    and where
+    \[ \varepsilon_A = A \tensor A^*
+        \xrightarrow{\sigma_{A,A^*}} A^* \tensor A
+        \xrightarrow{\eta_A^\dagger} I.
+    \]
+\end{definition}
+
+In order to define the inner product, we need to define the domain of the inner product--states--and
+the codomain of the inner product--scalars. Of course, category theory gives us no way to explicitly
+talk about the content of objects, but we can simulate it using the monadic unit. Consider a morphism
+$f : I \rightarrow A$. In $\Hilb$ where $I=\mathcal{C}$, $f$ is uniquely defined by where it sends
+the basis element $1$ of $I$. Thus $f(1)$ uniquely identifies a vector in $A$. We call such morphisms
+\emph{states} and refer to them as $\Ket{\varphi}$. A state $\Bra{\psi}$ is $\varphi^\dagger : A \rightarrow I$.
+
+When $f : I \rightarrow I$, $f(1)$ picks out an element in the unit; for $\Hilb$ this is a complex
+number. Therefore we treat such a morphism as a \emph{scalar} and refer to them as $\alpha$.
+Scalars defined in this way give rise to a notion of scalar multiplication: for 
+$\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
+\[ \alpha \bullet f : A \xrightarrow{\rho_A^{-1}} A \tensor I
+    \xrightarrow{f \tensor \alpha} B \tensor I
+    \xrightarrow{\rho_B} B.
+\]
+It is easy to demonstrate that scalar multiplication is in fact linear in $\alpha$.
+
+Now, the inner product of two states $\Ket{\varphi}$ and $\Ket{\psi}$
+is just the scalar
+\[ \Braket{\varphi \mid \psi} = \varphi^\dagger \circ \psi : I \rightarrow I. \]
+
+As expected from quantum theory, unitary morphisms preserve the inner product:
+\begin{align*}
+    \Braket{U\circ \varphi \mid U \circ \psi}
+    &= (U \circ \varphi)^\dagger \circ (U \circ \psi) \\
+    &= \varphi^\dagger \circ U^\dagger \circ U \circ \psi \\
+    &= \varphi^\dagger \circ \psi = \Braket{\varphi \mid \psi}
+\end{align*}
+
+In $\Hilb$, $(-)^*$ is the transpose operation and $(-)^\dagger$ is the conjugate-transpose.
+We would like to formalize the relationship between the two kinds of duality. In particular, if 
+$(-)_*$ is a covariant complex conjugation operation, then $f^\dagger = (f_*)^* = (f^*)_*$.
+Categorically, define $(-)_*$ to act as $(-)^*$ on objects, and on morphisms $f: A \rightarrow B$,
+define 
+\[ f_* = (f^\dagger)^* : A^* \rightarrow B^*. \]
+
+\subsection{Measurement via Biproducts}
+
+Abramksy and Coecke's categorical model subscribes to the many-worlds interpretation of quantum
+theory. That is, the act of measuring a qubit results in two possible branches---one in 
+which the qubit was measured $\Ket{0}$ and one in which the qubit was measured $\Ket{1}$.
+As a morphism this measurement will be modeled as
+\[ \meas : \Qubit \rightarrow A \oplus A \]
+where $\Qubit$ is the space of qubits and $A$ is some resulting state space.
+
+\begin{definition}
+    A category is said to have biproducts if for every $A_1,\ldots,A_n$
+    there is an object $A_1 \oplus \cdots \oplus A_n$ along with
+    projections and injections forming both a product and a coproduct.
+    
+    For $f : A \rightarrow C$ and $g : B \rightarrow C$, let $[f,g]$
+    denote the morphism from $A \oplus B$ to $C$.
+
+    For $f : A \rightarrow B$ and $g : A \rightarrow C$, let $\langle f,g\rangle$ denote
+    the morphism from $A$ to $B \oplus C$.
+\end{definition}
+
+\subsubsection*{Example} In the category of finite-dimensional hilbert spaces, the 
+biproduct is the direct sum.\footnote{Also the direct product; the two coincide
+for finite-dimensional vector spaces.}
+
+\subsubsection*{Linearity of morphisms}
+
+ In any category with biproducts, we can define addition and scalar multiplication
+of morphisms as follows:
+\begin{enumerate}
+    \item For $\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
+    $\alpha \cdot f : A \rightarrow B$ as
+    \[ \alpha \cdot f = A
+    \xrightarrow{\lambda_A} I \tensor A
+    \xrightarrow{\alpha \tensor \id_A} I \tensor A
+    \xrightarrow{\lambda_A^{-1}} A.
+    \]
+    \item For $f, g : A \rightarrow B$, define $f + g : A \rightarrow B$ as
+    \[ f + g : A
+    \xrightarrow{\langle \id_A, \id_A \rangle}
+    A \oplus A
+    \xrightarrow{f \oplus g}
+    B \oplus B  
+    \xrightarrow{[\id_A,\id_A]}
+    B
+    \]
+\end{enumerate}
+
+\subsubsection*{Distributivity}
+We can define a right distributivity natural isomorphism (and similarly for left distributivity)
+as
+\[
+    \tau_{A,B,C} = A \tensor (B \oplus C)
+    \xrightarrow{\langle \id_A \tensor \pi_1, \id_A \tensor \pi_2\rangle}
+    (A \tensor B) \oplus (A \tensor C)
+\]
+If the biproduct is thought of as parallel worlds, then the distributivity of $\tensor$
+over $\oplus$ represents the propogation of classical information $A$ to the two
+quantum measurement branches $B$ and $C$. The classical information is not duplicated
+because $B$ and $C$ never occur together. As we shall see in the teleportation
+example, the distributivity really corresponds to classical transmission of data.
+In particular, the speed of this transmission is limited by the speed of light.
