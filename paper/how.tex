@@ -117,44 +117,6 @@ in certain ways not outlined here.
 A monoidal natural transformation between two symmetric monoidal functors
 is a natural transformation that commutes with the monoidal components $m_I$ and $m_{A,B}$.
 
-\jp{Move to earlier section?}
-The no-cloning theorem says there is no way to produce two copies of a single 
-arbitrary quantum state. To be more precise, the no-cloning theorem states that
-there is no unitary transformation which can duplicate every possible quantum state.
-
-\begin{theorem}[No-Cloning (cite)]
-    There is no unitary transformation acting on qubits as follows:
-    \[ U(\ket{0}\tensor\ket{\varphi}) = \ket{\varphi}\tensor\ket{\varphi}.\footnotemark \]
-    \footnotetext{Unitary transformations are, in traditional quantum mechanics,
-    always square matrices, so in this case we ``pad'' the transformation with an
-    arbitrary \jp{???} state.}
-\end{theorem}
-\begin{proof}
-    Suppose there were such a transformation. We may expand an arbitrary $\ket{\varphi}$
-    as $\varphi = \alpha\ket{0} + \beta\ket{1}$. By the definition of $U$, we know
-    \begin{align*} 
-        U(\ket{0} \tensor \ket{\varphi})
-        &= \ket{\varphi} \tensor \ket{\varphi} \\
-        &= (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1}) \\
-        &= \alpha^2 \ket{00} + \alpha\beta\ket{01} + \alpha\beta\ket{10} + \beta^2\ket{11}.
-    \end{align*}
-    However, since all unitary transformations are necessarily linear, we can also compute
-    \begin{align*}
-        U(\ket{0} \tensor \ket{\varphi})
-        &= \alpha U(\ket{0} \tensor \ket{0}) + \beta U(\ket{0} \tensor \ket{1}) \\
-        &= \alpha \ket{00} + \beta \ket{11}.
-    \end{align*}
-    These two expansions are unequal, thus we have reached a contradiction. 
-\end{proof}
-
-So what does this have to do with monoidal categories? 
-The use of linearity in the proof of the no-cloning theorem is exactly the overlap.
-Without additional structure, monoidal categories do not allow arbitrary
-morphisms $A \rightarrow A \tensor A$. \cite{abramsky2009categorical}
-prove the corresponding property holds for their entire categorical model,
-but for now it suffices to say that the structure added in the remainder
-of this section does not allow arbitrary duplication on the monoidal structure.
-
 \subsection{Compact Closed Categories: Names and Conames}
 
 \begin{definition}
@@ -385,7 +347,7 @@ where $\Qubit$ is the space of qubits and $A$ is some resulting state space.
 \begin{definition}
     A category is said to have biproducts if for every $A_1,\ldots,A_n$
     there is an object $A_1 \oplus \cdots \oplus A_n$ along with
-    projections and injections forming both a product and a coproduct.
+    projections $\pi_i$ and injections $\iota_i$ forming both a product and a coproduct.
     
     For $f : A \rightarrow C$ and $g : B \rightarrow C$, let $[f,g]$
     denote the morphism from $A \oplus B$ to $C$.
@@ -394,23 +356,30 @@ where $\Qubit$ is the space of qubits and $A$ is some resulting state space.
     the morphism from $A$ to $B \oplus C$.
 \end{definition}
 
-\subsubsection*{Example} In the category of finite-dimensional hilbert spaces, the 
+We can turn $\oplus$ into a bifunctor as follows: for $f_1:A_1 \rightarrow B_1$
+and $f_2 : A_2 \rightarrow B_2$, define 
+\begin{align*}
+    f_1 \oplus f_2 &: A_1 \oplus A_2 \rightarrow B_1 \oplus B_2 \\
+    f_1 \oplus f_2 &= [\iota_1 \circ f_1, \iota_2 \circ f_2].
+\end{align*}
+
+\subsubsection*{Example} In the category $\Hilb$, the 
 biproduct is the direct sum.\footnote{Also the direct product; the two coincide
-for finite-dimensional vector spaces.}
+for finite-dimensional vector spaces.} The basis of $H_1 \oplus H_2$ is 
+\[ \{\inl b_1 \mid b_1 \in B_1 \} \cup \{\inr b_2 \mid b_2 \in B_2 \} \]
+where $B_1$ is a basis for $H_1$ and $B_2$ is a basis for $H_2$. In this case,
+\begin{align*}
+    [f,g](\inl a) &= f(a) \\
+    [f,g](\inr a) &= g(a) \\
+    \langle f,g \rangle (a) &= \inl f(a) + \inr g(a) \\
+    f_1 \oplus f_2(\inl a_1) &= \inl f_1(a_1) \\
+    f_1 \oplus f_2(\inr a_2) &= \inr f_2(a_2)
+\end{align*}
 
 \subsubsection*{Linearity of morphisms}
 
- In any category with biproducts, we can define addition and scalar multiplication
-of morphisms as follows:
-\begin{enumerate}
-    \item For $\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
-    $\alpha \cdot f : A \rightarrow B$ as
-    \[ \alpha \cdot f = A
-    \xrightarrow{\lambda_A} I \tensor A
-    \xrightarrow{\alpha \tensor \id_A} I \tensor A
-    \xrightarrow{\lambda_A^{-1}} A.
-    \]
-    \item For $f, g : A \rightarrow B$, define $f + g : A \rightarrow B$ as
+In any category with biproducts, we can define addition of morphisms as follows:
+For $f, g : A \rightarrow B$, define $f + g : A \rightarrow B$ as
     \[ f + g : A
     \xrightarrow{\langle \id_A, \id_A \rangle}
     A \oplus A
@@ -419,7 +388,17 @@ of morphisms as follows:
     \xrightarrow{[\id_A,\id_A]}
     B
     \]
-\end{enumerate}
+ \subsubsection*{Example} In $\Hilb$, addition of morphisms corresponds to addition of linear
+transformations, as expected. That is,
+\begin{align*}
+    f+g(a)
+    &= [\id_A,\id_A] \circ (f \oplus g) \circ \langle \id_A, \id_A \rangle (a) \\
+    &= [\id_A,\id_A] \circ (f \oplus g) (\inl a + \inr a) \\
+    &= [\id_A,\id_A] \circ (f \oplus g) (\inl a)
+     + [\id_A,\id_A] \circ (f \oplus g) (\inr a) \\
+    &= [\id_A,\id_A] (\inl f(a)) + [\id_A,\id_A] (\inr g(a)) \\
+    &= f(a) + g(a)
+\end{align*}
 
 \subsubsection*{Distributivity}
 We can define a right distributivity natural isomorphism (and similarly for left distributivity)
@@ -430,8 +409,8 @@ as
     (A \tensor B) \oplus (A \tensor C)
 \]
 If the biproduct is thought of as parallel worlds, then the distributivity of $\tensor$
-over $\oplus$ represents the propogation of classical information $A$ to the two
-quantum measurement branches $B$ and $C$. The classical information is not duplicated
+over $\oplus$ represents the propogation of quantum information $A$ to the two
+quantum measurement branches $B$ and $C$. The information is not considered to be duplicated
 because $B$ and $C$ never occur together. As we shall see in the teleportation
 example, the distributivity really corresponds to classical transmission of data.
 In particular, the speed of this transmission is limited by the speed of light.
