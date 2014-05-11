@@ -45,8 +45,9 @@
 \usepackage[svgnames]{xcolor}
 
 \usepackage{tikz}
-\usetikzlibrary{calc,shapes,arrows}
+\usetikzlibrary{calc,shapes,arrows,decorations.pathreplacing}
 \input{tikz-qcircuits}
+\newcommand*{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
 
 \usepackage[section]{placeins} % Floats should stay in their section
 
@@ -88,6 +89,31 @@
 \declaretheorem[style=myplain]{lemma}
 \declaretheorem[style=myplain]{definition}
 
+\newcount\qcmark@ds@count
+\newcommand*{\qcmark@make@ds}[1]{%
+  \qcmark@ds@count=#1%
+  \advance\qcmark@ds@count by -1
+  \edef\qcmark@ds{}%
+  \loop
+    \edef\qcmark@ds{d\qcmark@ds}%
+    \advance\qcmark@ds@count by -1
+  \ifnum\qcmark@ds@count>0\repeat}
+
+% \ar takes a real @ :-)
+\makeatother
+\def\qcmarkAT{@}
+\makeatletter
+
+% The format of this command is for ease of \expandafter-ing
+\edef\qcmarkCMD#1&#2\relax{%
+  \noexpand\ar \qcmarkAT{--}[]+<#2,1em>;[#1]+<#2,-1em>%
+}
+
+\newcommand*{\qcmark}[2][0em]{%
+  \qcmark@make@ds{#2}%
+  \expandafter\qcmarkCMD\qcmark@ds&#1\relax
+}
+
 \newcommand{\id}{\operatorname{id}}
 \newcommand{\unit}{\mathbf{1}}
 \newcommand{\zero}{\mathbf{0}}
@@ -109,6 +135,7 @@
 \newcommand*{\qubit}{\mathbb{Q}}
 \newcommand*{\tensor}{\otimes}
 \newcommand*{\cross}{\times}
+\newcommand*{\mtimes}{\cdot}
 
 \let\picvector\vector
 \let\vector\relax
