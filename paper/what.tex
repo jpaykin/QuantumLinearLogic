@@ -39,12 +39,12 @@ linear in its \emph{second} argument, and conjugate-linear in its \emph{first}.
 Fortunately, for quantum computation, we are only interested in very particular
 Hilbert spaces.  These are the spaces that arise from considering the single
 fundamental primitive datum of quantum computation: the \term{qubit}.  A qubit
-is a \emph{qu}antum \emph{b}it: when we have a classical bit, we know that it is
-either $0$ or $1$; similarly, when we measure a qubit, we know that we will get
-either $\ket{0}$ or $\ket{1}$.  The difference between a qubit and a bit lies in
-the word ``measure'': as long as we \emph{don't} measure a qubit, it can take on
-all sorts of crazy states.  Formally, we can represent a qubit as an element of
-$\C^2$ subject to some normalization constraints:
+is a \emph{qu}antum \emph{b}it: when we have a Newtonian\footnotemark{} bit, we
+know that it is either $0$ or $1$; similarly, when we measure a qubit, we know
+that we will get either $\ket{0}$ or $\ket{1}$.  The difference between a qubit
+and a bit lies in the word ``measure'': as long as we \emph{don't} measure a
+qubit, it can take on all sorts of crazy states.  Formally, we can represent a
+qubit as an element of $\C^2$ subject to some normalization constraints.
 
 \begin{definition}[Qubit]\label{def:qubit}
   A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
@@ -55,6 +55,17 @@ $\C^2$ subject to some normalization constraints:
   termed \term{superpositions}.  We call the coefficients $a$ and $b$
   \term{probability amplitudes}, for reasons which will become clear later.
 \end{definition}
+
+\footnotetext{The usual term for this is \term{classical}: we contrast quantum
+  bits with classical bits, quantum computation with classical computation, and
+  in general quantum physics with classical physics.  However, in computer
+  science, we use the term \term{classical} to refer to classical logic (that
+  is, logic that affirms the law of the excluded middle).  Quantum computation
+  is as constructive as they come; the overloading of the term classical is
+  merely an (unfortunate) coincidence.  To avoid ambiguity, we cleave to the
+  computer scientists' convention of using ``classical'' only for classical
+  logic, and refer to all our non-quantum computational models as Newtonian
+  instead of classical.}
 
 Now that we have this definition, we can define our first unitary operator:
 bitwise negation, which we define as \[
@@ -140,9 +151,10 @@ left to right.  A box which spans some wires and contains a term is a
 \term{gate}; the effect of this gate is given by the unitary matrix within the
 box, and the whole thing is to be read as applying that matrix to the given
 qubits.\footnotemark{} The qubit labels at the left ends of the wires are the
-input values; the qubit labels at the right end are the output values.
-Sometimes, we will give a qubit a name as well as an initial value; the name
-will be placed even further left.
+input values (customarily either $\ket{0}$ or an input to the circuit); the
+qubit labels at the right end are the output values.  Sometimes, we will give a
+qubit a name as well as an initial value; the name will be placed even further
+left.
 
 \footnotetext{Our mathematically inclined readers might notice here that this is
   reminiscent of category theoretic diagrams, including composition happening in
@@ -396,8 +408,7 @@ This is impossible, and so $(\ket{00} + \ket{11})/2$ is entangled.
     \\
     \lstick{\ket{0}} &
       \qw &
-      \qw & \dstick{\raisebox{-2.67
-em}{$\displaystyle
+      \qw & \dstick{\raisebox{-2.67em}{$\displaystyle
               \frac{\ket{0} + \ket{1}}{\sqrt{2}} \tensor \ket{0}$}} \qw &
             \qw &
       \targ &
@@ -410,16 +421,16 @@ em}{$\displaystyle
 \end{figure}
 
 Diagrammatically, we represent the controlled not gate, not with a box, but with
-a \term{control}~``$\bullet$'' and a \term{target}~``$\oplus$''; this represents
-applying $\CNOT$ to the two-qubit state
-$\ket{\mathit{control}}\ket{\mathit{target}}$.  \Cref{qcd:cnot-00} shows what
-this looks like when evaluating $\CNOT\ket{00}$.  This is a no-op, so the
-diagram is pretty boring; \cref{qcd:entangle-2-equal} instead shows how to use
-the controlled not gate to entangle two qubits so that they must be equal;
-specifically, into the state $(\ket{00} + \ket{11})/\sqrt{2}$.  First, we use
-the Hadamard gate to put the first qubit into the state $(\ket{0} +
-\ket{1})/\sqrt{2}$; then, we use the controlled not gate to entangle the qubit,
-as we discussed above.
+a \term{control}~``\QcircuitDemo[\,]{\control}'' and a
+\term{target}~``\QcircuitDemo{\qctarget}''; this represents applying $\CNOT$ to
+the two-qubit state $\ket{\mathit{control}}\ket{\mathit{target}}$.
+\Cref{qcd:cnot-00} shows what this looks like when evaluating $\CNOT\ket{00}$.
+This is a no-op, so the diagram is pretty boring; \cref{qcd:entangle-2-equal}
+instead shows how to use the controlled not gate to entangle two qubits so that
+they must be equal; specifically, into the state $(\ket{00} +
+\ket{11})/\sqrt{2}$.  First, we use the Hadamard gate to put the first qubit
+into the state $(\ket{0} + \ket{1})/\sqrt{2}$; then, we use the controlled not
+gate to entangle the qubit, as we discussed above.
 
 If we wanted to write this circuit out as a matrix, though, what would we do?
 We have applied the Hadamard gate only to the first qubit, even though we have a
@@ -489,3 +500,157 @@ the two qubits.  Working out the matrix algebra directly, we get
   &= \frac{1}{\sqrt{2}}\vector{1 0 0 1}
    = \frac{\ket{00} + \ket{11}}{\sqrt{2}}.
 \end{align*}
+
+While there is much more we could say about quantum mechanics, most of it is
+outside the scope of the paper.  Only one important concept remains:
+measurement.  When we work with qubits, we can put them into all sorts of
+superpositions and entangled states, but we claimed above that all measurements
+would produce either $\ket{0}$ or $\ket{1}$.  The way this works is that quantum
+measurements are \emph{probabilistic}.
+
+\begin{definition}[Measurement]\label{def:single-qubit-measurement}
+  When we \term{measure} an $n$-qubit state \[
+    \ket{\psi} = \psi_{0\cdots0}\ket{0\cdots0}
+               + \psi_{0\cdots1}\ket{0\cdots1}
+               + \cdots
+               + \psi_{1\cdots1}\ket{1\cdots1},
+  \] the result is one of the basis vectors; the probability that the result is
+  the basis vector $\ket{\vec{B}}$ is $|\psi_{\vec{B}}|^2$ for all $\vec{B} \in
+  \Z_2^n$.
+\end{definition}
+
+Since we know that $|\psi_0|^2 + |\psi_1|^2 = 1$ by \cref{def:qubit}, these are
+the only two options for a one-qubit state.  This also justifies the name
+``probability amplitudes'' for $\psi_0$ and $\psi_1$.  It is easy to check that
+the tensor product preserves the property that the sum of the squares of the
+norms of all the coefficients sum to one, so this generalizes to multi-qubit
+states.  Note that there exist distinct qubits which, when measured, look the
+same; for instance, $H\ket{0} = (\ket{0} + \ket{1})/\sqrt{2}$ and $H\ket{1} =
+(\ket{0} - \ket{1})/\sqrt{2}$.  Since $(1/\sqrt{2})^2 = (-1/\sqrt{2})^2 = 1/2$,
+both of these qubits are equally likely to be $\ket{0}$ or $\ket{1}$ when
+measured; however, because one has a negative coefficient for $\ket{1}$, they
+transform differently in the general case.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} &
+    \gate{H} &
+    \measureD{\metersym} &
+    \rstick{\ket{b} \in \{\ket{0},\ket{1}\}} \cw
+  }}
+  \caption{The quantum circuit diagram for flipping a fair coin; this is the
+    circuit in \cref{qcd:hadamard-0} with a measurement at the end.}
+  \label{qcd:fair-coin}
+\end{figure}
+
+Given this, we can define a circuit to simulate flipping a fair coin by adding a
+measurement to the circuit in \cref{qcd:hadamard-0}; the result is the circuit
+in \cref{qcd:fair-coin}.  We notate measurement in a quantum circuit diagram
+with a \textsf{D}-shaped box containing a stylized meter, ``\metersym''.  What
+emerges from a measurement is a \emph{Newtonian} bit, either $\ket{0}$ or
+$\ket{1}$; this is notated with a double wire,
+``\QcircuitDemo{&\cw}''.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} &
+      \gate{H} & \ctrl{1} & \multimeasureD{1}{\metersym} &
+    \rstick{\ket{b}} \cw
+    \\
+    \lstick{\ket{0}} &
+      \qw & \targ & \ghost{\metersym} &
+    \rstick{\ket{b}} \cw
+  }}
+  \caption{A quantum circuit diagram for simulating agreement on a single coin
+    flip; this is the circuit in \cref{qcd:entangle-2-equal} with a two-qubit
+    measurement at the end.}
+  \label{qcd:fair-coin-agreement-local}
+\end{figure}
+
+Entanglement allows us to get something better, though: remote agreement on the
+result of a coin flip.  The circuit in \cref{qcd:entangle-2-equal} sets up a
+correlated entangled state; adding a measurement allows us to bring that
+correlation into the Newtonian world.  The circuit in
+\cref{qcd:fair-coin-agreement-local} does this by measuring both qubits after
+the original circuit produces the entangled state $(\ket{00} +
+\ket{11})/\sqrt{2}$.  Since the probability amplitudes of $\ket{00}$ and
+$\ket{11}$ are equal and the probability amplitudes of $\ket{01}$ and $\ket{10}$
+are zero, this measurement will either produce $\ket{00}$ or $\ket{11}$, and
+will do so with equal probability.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} &
+      \gate{H} & \ctrl{1} & \measureD{\metersym} &
+    \rstick{\ket{b}} \cw
+    \\
+    \lstick{\ket{0}} &
+      \qw & \targ & \qw &
+    \rstick{\ket{b}} \qw
+  }}
+  
+  \caption{A quantum circuit diagram for simulating agreement between two
+    spacelike separated parties on a single coin flip; this is the circuit in
+    \cref{qcd:entangle-2-equal} with a single-qubit measurement at the end.}
+  \label{qcd:fair-coin-agreement-separated}
+\end{figure}
+
+However, this isn't a particularly powerful demonstration of entanglement.  If
+we have both qubits in the same place for measurement purposes, then we can just
+as easily simulate a single coin flip and have both participants look at it.
+Instead, the scenario we want to model is where Alice and Bob wish to agree on a
+single coin flip, but to do so after Alice has blasted off in her rocket and
+gotten far away from Bob.  In this situation, they can't communicate, so only
+one of them will measure their qubit at a time; things are symmetric, so without
+loss of generality, suppose Alice measures her qubit and Bob doesn't.  Then we
+get the circuit in \cref{qcd:fair-coin-agreement-separated}, reading the top
+wire as Alice and the bottom wire as Bob (and imagining a rocket ship after the
+controlled not gate).  This circuit has a couple of interesting properties.
+First, we see that Bob's qubit does not get notated with a Newtonian wire.  Bob
+cannot know that Alice has measured her qubit, so he doesn't know that his qubit
+is in the basis state $\ket{c}$ until he measures it.  Second, measuring Alice's
+qubit changes Bob's qubit.  This makes sense: prior to the measurement, the
+qubits were in the state $(\ket{00} + \ket{11})/\sqrt{2}$.  If Alice measures
+her qubit to be $\ket{0}$, then the only possibility that remains for Bob's
+qubit is to be $\ket{0}$ too, and similarly for $\ket{1}$.  However, to make
+this notion formal, we must give an account of how measuring \emph{part} of an
+entangled state works.
+
+\begin{definition}[Partial measurement]\label{def:partial-measurement}
+  To \term{measure} the $i$th (zero-indexed) qubit in an $n$-qubit state \[
+    \ket{\psi} = \psi_{0\cdots0}\ket{0\cdots0}
+               + \psi_{0\cdots1}\ket{0\cdots1}
+               + \cdots
+               + \psi_{1\cdots1}\ket{1\cdots1},
+  \] we first write the basis vectors as $\ket{\vec{B}}$ for each \[
+    \vec{B} = \vector{b_0 b_1 \vdots{} b_{n-1}} \in \Z_2^n,
+  \] and so write the whole state as \[
+    \ket{\psi} = \sum_{\vec{B} \in \Z_2^n} \psi_{\vec{B}}\ket{\vec{B}}.
+  \]  We can split each $\vec{B}$ into three parts: \[
+    \vec{B}_L = \vector{b_0 \vdots{} b_{i-1}} \in \Z_2^i,\
+    b_i \in \Z_2,\text{ and }
+    \vec{B}_R = \vector{b_{i+1} \vdots{} b_{n-1}} \in \Z_2^{n-i-1};
+  \] we write $\Z_2^n \downarrow i$ for the set $\Z_2^i \cross \Z_2^{n-i-1}$.
+  We can then define the states \[
+    \ket{\psi_b} = \sum_{(\vec{B}_L,\vec{B}_R) \in \Z_2^n \downarrow i}
+                     \psi_{\vec{B}_L,b,\vec{B}_R}
+                     \ket{\vec{B}_L,b,\vec{B}_R}
+  \] for $b \in \Z_2$, and rewrite the whole state as $\ket{\psi} = \ket{\psi_0}
+  + \ket{\psi_1}$.  Measurement then effectively puts us in either the state
+  $\ket{\psi_0}$ or $\ket{\psi_1}$, up to normalization.  Let \[
+    \psi_b = \sum_{(\vec{B}_L,\vec{B}_R) \in \Z_2^n \downarrow i}
+               |\psi_{\vec{B}_L,b,\vec{B}_R}|^2
+  \] be the sum of the probabilities of all cases in which $b_i$ is measured to
+  be $b$; then $\ket{\psi'_b} = \psi_{1-b}\ket{\psi_b}$ is the renormalized
+  version of $\ket{\psi_b}$, and we end up in state $\ket{\psi'_b}$ with
+  probability $\psi_b$.\asz{Check the normalization here -- I think it's wrong.}
+  
+  To measure multiple qubits, this process is simply repeated recursively.
+\end{definition}
+
+Again, the intuitive meaning of this is clear: the probability that qubit $i$ is
+$\ket{0}$ is just the sum of the probabilities that we end up in any of the
+states where this is true, and measurement discards all the other cases.  To
+preserve normalization, the probability mass that was discarded is evenly
+applied to all remaining states, so that the relative probabilities do not
+change.

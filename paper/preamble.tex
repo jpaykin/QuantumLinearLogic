@@ -79,6 +79,9 @@
 
 \makeatletter
 
+\newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
+\newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
+
 \declaretheoremstyle[
   headfont=\normalfont\bfseries,
   notefont=\normalfont\bfseries, notebraces={(}{)},
@@ -123,11 +126,12 @@
 \newcommand{\meas}{\operatorname{meas}}
 \newcommand{\Qubit}{Q}
 \newcommand{\CNOT}{\mathit{CNOT}}
-\newcommand{\pos}{\hphantom{-}}
-
-\newcommand{\asz}[1]{\ifdraft\textcolor{violet}{[ASZ: #1]}\fi}
-\newcommand{\jp}[1]{\ifdraft\textcolor{orange}{[JP: #1]}\fi}
-
+\newcommand*{\metersym}{\tikz \draw[rotate=45]
+  (1.1em,0) arc (0:90:1.1em)
+  (0.55em,0.55em) -- ++(0.825em,0)
+;}
+\newcommand*{\thinnerspace}{\tmspace+\thinmuskip{.08333em}} % Half a \,
+\newcommand*{\Z}{\mathbb{Z}}
 \newcommand*{\R}{\mathbb{R}}
 \newcommand*{\C}{\mathbb{C}}
 \newcommand*{\T}{\mathsf{T}}
@@ -136,6 +140,16 @@
 \newcommand*{\tensor}{\otimes}
 \newcommand*{\cross}{\times}
 \newcommand*{\mtimes}{\cdot}
+\newcommand*{\pos}{\hphantom{-}}
+% The definition of \targ from QCircuit.tex, with the \qw removed
+\newcommand*{\qctarget}{*+<.02em,.02em>{\xy ="i","i"-<.39em,0em>;"i"+<.39em,0em>
+    **\dir{-}, "i"-<0em,.39em>;"i"+<0em,.39em>
+    **\dir{-},"i"*\xycircle<.4em>{} \endxy}}
+\makeatother % \Qcircuit needs a real @ sign
+\newcommand*{\QcircuitDemo}[2][\thinnerspace]{%
+  #1\raisebox{.8ex}{\Qcircuit@C=1em{#2}}#1%
+}
+\makeatletter
 
 \let\picvector\vector
 \let\vector\relax
