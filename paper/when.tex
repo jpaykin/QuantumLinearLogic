@@ -15,20 +15,22 @@ machine, all quantum algorithms can be expressed formally in terms of QTMs.
 calculus which  takes an important step in introducing abstraction of first-class 
 quantum circuits.
 Their calculus is equipped with a linear type system, which uses subtyping of the
-exponentials to distinguish classical from quantum values. The language introduces
-a number of constants corresponding to $\operatorname{new}$ for pure state preparation,
-$\operatorname{meas}$ for measurement, and constants corresponding to all unitary
+exponentials to distinguish Newtonian from quantum values. The language introduces
+a number of constants: $\texttt{new}$ for pure state preparation,
+$\texttt{meas}$ for measurement, and constants corresponding to all unitary
 transforamtions. The ability to introduce arbitrary unitary matrices is
 important for expressing known quantum algorithms, but breaks the abstraction 
-bewteen higher-order circuits and unitary matrices.
+bewteen higher-order circuits and unitary matrices. \cite{abramsky2009categorical}
+address this by expressing teleportation and other algorithms \emph{purely} in
+category-theoretic terms, thereby eliminating the need for arbitrary unary matrices.
 
 There are many attempts to develop usable quantum languages for future physical quantum
 computers. \cite{omer2000quantum} developed the langauge QCL, which is a procedural
 quantum language based on C. QCL can be used as a frontend for a quantum simulator,
-although it is designed as a real language for quantum computers. Quipper is another
-language, developed by \cite{green13quipper}, which takes a different approach, in that
+although it is designed as a real language for quantum computers. Quipper,
+developed by \cite{green13quipper}, 
 it is a higher-order functional language embedded in Haskell. Compared to QCL,
-the compilation of Quipper code to quantum circuits is formalized. 
+Quipper formalizes the compilation of code to quantum circuits.
 Both languages allow for effectful computation, limited recursion, and automatic
 generation of quantum code from classical functions.
 
@@ -43,8 +45,14 @@ to Abramsky's model described in \Section{how}.
 
 \subsection{Next steps}
 
-The design of quantum programming languages is in some sense undirected,
-due to the fact that physical quantum computers are still in their infancy.
-\jp{???}
-
-
+The way forward for quantum computing depends in some sense on engineering. 
+Physical quantum computers are still in their infancy, and the different 
+engineering design choices that are made will influence the computing design choices.
+The quest for feasable quantum computers is racing ahead day by day.
+Researchers are able to factor larger and larger numbers using Shore's algorithm,
+culminating in a factorization of 143 by \cite{xu2012quantum}.
+In 2012 \citet{bao2012quantum} succeeded in performing the first large-scale teleportation
+of qubits, across a distance of 150~meters.
+There are even commercial products, such as D-Wave Systems \citep{johnson2011quantum}, which utilizes
+quantum superpositions (although there is speculation over whether the D-Wave truly takes
+advantage of the quantum properties, or is equivalent to a classical computer).

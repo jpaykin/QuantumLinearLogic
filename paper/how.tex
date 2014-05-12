@@ -20,7 +20,7 @@ that is sound with respect to the language's operational semantics.
 Thus the language might have many different operational semantics that fit within the same
 categorical framework. 
 The benefit of axiomatization is that it illuminates exactly the mathematical structure
-outlined by the language, and no more.
+required by the language, and no more.
 
 There is still much debate over the correct \emph{langauge} to describe quantum computation,
 but the semantic domain is very well understood---Hilbert spaces.
@@ -30,12 +30,14 @@ to encode quantum algorithms, it will be easier to understand what a language fo
 quantum computation could look like. It is a step for working backwards, not forwards,
 on the categorical semantic chain.
 
+In this section a certain amount of familiarity with category theory is expected,
+including objects, morphisms, functors and natural transformations. 
+For the unfamiliar reader, \cite{pierce1991basic} provides a good introduction for
+computer scientists.
 
-A certain amount of familiarity with category theory is expected: objects, morphisms,
-functors and natural transformations.
-When developing categorical notions, we will use the category $\Hilb$ of finite-dimensional
+When developing our categorical notions, we will use the category $\Hilb$ of finite-dimensional
 Hilbert spaces as a running example. The objects are finite-dimensional Hilbert spaces,
-and the morphisms are linear transformations. \jp{Not necessarily unitary...}
+and the morphisms are linear transformations. 
 
 \subsection{Symmetric Monoidal Categories and the Tensor Product}
 
@@ -51,7 +53,7 @@ and a unit $I$, along with natural isormorphisms:
     \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
 \end{align*}
 In addition, the monoidal structure must commute with the isomorphisms in 
-various ways \jp{Cite}.
+various ways. For full details, see \cite{bierman1995categorical}.
 \end{definition}
 
 \subsubsection*{Example}
@@ -59,7 +61,7 @@ The category $\Hilb$ is symmetric monoidal, where the tensor product
 is the regular tensor product on vector spaces. Notice that $\tensor$ is
 in fact a functor---it is defined both on objects ($H_1 \tensor H_2$ is a Hilbert space)
 and on morphisms (matrices).
-The unit of the tensor is the underlying field $\C$, with the basis $B = \{ \unit \}$.
+The unit of the tensor is the underlying field $\C$, with the basis $B = \{ 1 \}$.
 
 The tensor can be thought of as a new kind of composition. Traditional
 sequential composition is given by the categorical composition of two morphisms:
@@ -83,7 +85,6 @@ whereas parallel composition is the result of tensoring two morphisms together:
     \draw (g) -- (6,-0.5);
 \end{tikzpicture} \end{center}
 
-
 Along with monoidal categories comes a range of categorical structures tailored
 to the monoidal structure. Relevent here are functors and natural transformations.
 
@@ -94,7 +95,7 @@ monoidal categories, along with a morphism
 in D and a natural transformation
 \[ m_{A,B}^F : F A \tensor F B \rightarrow F(A \tensor B). \]
 Again, these morphisms must commute with the monoidal structures in $C$ and $D$
-in certain ways not outlined here. 
+in certain ways not outlined here \citep{bierman1995categorical}.
 
 A monoidal natural transformation between two symmetric monoidal functors
 is a natural transformation that commutes with the monoidal components $m_I$ and $m_{A,B}$.
@@ -103,7 +104,7 @@ is a natural transformation that commutes with the monoidal components $m_I$ and
 \subsubsection*{States and Scalars}
 There is no default way to talk about the internal structure of objects in category theory,
 but the unit of monoidal categories give a kind of work-around. Consider a morphism 
-$f : I \rightarrow A$. In $\Hilb$ where $I=\mathcal{C}$, $f$ is uniquely defined by where it sends
+$f : I \rightarrow A$. In $\Hilb$ where $I=\C$, $f$ is uniquely defined by where it sends
 the basis element $1$ of $I$. Thus $f(1)$ uniquely identifies a vector in $A$. We call such morphisms
 \emph{states} and refer to them as $\Ket{\varphi}$.\footnotemark
 
@@ -112,13 +113,14 @@ is defined later in the section.}
 
 When $f : I \rightarrow I$, $f(1)$ picks out an element in $\C$---a complex number.
 Therefore we treat such a morphism as a \emph{scalar}.
-Scalars defined in this way give rise to a notion of scalar multiplication: for 
+Scalars defined in this way give rise to a notion of abstract scalar multiplication: for 
 $\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
 \[ \alpha \bullet f : A \xrightarrow{\rho_A^{-1}} A \tensor I
     \xrightarrow{f \tensor \alpha} B \tensor I
     \xrightarrow{\rho_B} B.
 \]
-It is easy to demonstrate that scalar multiplication is in fact linear in $\alpha$.
+It is easy to demonstrate that abstract scalar multiplication is in fact linear in $\alpha$
+and, in the case of $\Hilb$, corresponds to regular scalar multiplication.
 
 
 \subsection{Compact Closed Categories: Names and Conames}
@@ -148,7 +150,7 @@ is the identity morphism on $A^*$.
 \end{definition}
 
 \subsubsection*{Example} In $\Hilb$, the dual
-of a Hilbert space $H$ is the space of continuous linear maps from $H$
+of a Hilbert space $H$ is the space of linear maps from $H$
 to the underlying field. For a basis element $b$, let $\delta_b$
 be the linear map defined on basis elements as follows:
 \[ \delta_b(b') = \begin{cases}
@@ -199,6 +201,10 @@ Graphically, we denote the name and coname of $f$ as
     \node[invisible] (destination) at (2,1) {};
     \path (name.north east) edge [above] node {$A^*$} (destination.north west);
     \path (name.south east) edge [above] node {$B$}   (destination.south west);
+\end{tikzpicture}
+\qquad\text{and}\qquad
+\begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
 
     \node[conamenode] (coname) at (0,-1) {$f$};
     \node[invisible] (source) at (-2,-1) {};
@@ -216,9 +222,9 @@ From the commutativity of the unit and counit, we can then induce certain proper
 $\lift{-}$ and $\llower{-}$ operations, for example those in \Figure{names}.
 
 \begin{figure}
-\begin{tabular}{cccc}
-Absorbtion
-&
+\begin{tabular}{ccc}
+&Absorbtion
+\\
 \begin{tikzpicture}
     \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
     \node[namenode] (f) at (1,1) {$f$};
@@ -239,8 +245,8 @@ $=$
     \path (gf.south east) edge [above] node {$C$}    (target.south west);
 \end{tikzpicture}
 \\ \\
-Compositionality
-&
+&Compositionality 
+\\
 \begin{tikzpicture}
     \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
     \node[invisible] (source)   at (0,.67)    {};
@@ -405,11 +411,9 @@ as
     (A \tensor B) \oplus (A \tensor C)
 \]
 If the biproduct is thought of as parallel worlds, then the distributivity of $\tensor$
-over $\oplus$ represents the propogation of quantum information $A$ to the two
-quantum measurement branches $B$ and $C$. The information is not considered to be duplicated
-because $B$ and $C$ never occur together. As we shall see in the teleportation
-example, the distributivity really corresponds to classical transmission of data.
-In particular, the speed of this transmission is limited by the speed of light.
+over $\oplus$ represents the propogation of classical information (which measurement
+branch are we in?) to the quantum data in $A$. The information is not considered
+to be duplicated beacuse $B$ and $C$ never occur together.
 
 \subsubsection*{Qubits: Putting it all together}
 
@@ -437,17 +441,19 @@ the state if $\ket{1}$ was measured. In particular,
 
 What is the intended behavior of teleportation? We start out with a single qubit $\ket{\varphi}$
 and end up in four distinct measurment brances: $\Qubit \oplus \Qubit \oplus \Qubit \oplus \Qubit$.
-(We will write this sum as $4 \cdot \Qubit$.) We want each of these branches to reflect the value
-$\ket{\varphi}$, so the intended behavior of teleportation is just
-\[ \Delta^4 := \langle  \id_\Qubit \rangle_{i=1}^{4} : \Qubit \rightarrow 4 \cdot \Qubit. \]
+(We will write this sum as $4 \cdot \Qubit$.) The state of the qubit in each branch will reflect
+the value $\ket{\varphi}$, but scaled by the factor $s^\dagger s$ where $s(1) = \frac 1 {\sqrt{2}}$.
+Thus the intended behavior of teleportation is
+\[ \Delta^4 := \langle s^\dagger s \bullet \id_\Qubit \rangle_{i=1}^{4} : \Qubit \rightarrow 4 \cdot \Qubit. \]
 Next we will trace out the parts of the teleportation algorithm in terms of the categorical 
 structures developed in this section.
 First we wish to produce the pair of qubits entangled by Alice and Bob. We saw that this entanglement
-is constructed as $s \bullet \lift{\id_{\Qubit}}$ where $s(1)=\frac 1 {\sqrt{2}}$. Together with the state 
+is constructed as $s \bullet \lift{\id_{\Qubit}}$. Together with the state 
 $\ket{\varphi}$ we so far have
 \[
     \Qubit \xrightarrow{\rho_\Qubit} \Qubit \tensor I 
-    \xrightarrow {\id_\Qubit \tensor s \bullet \lift{\id_\Qubit}} \Qubit \tensor (\Qubit^* \tensor \Qubit)
+    \xrightarrow {\id_\Qubit \tensor s \bullet \lift{\id_\Qubit}} 
+    \Qubit \tensor (\Qubit^* \tensor \Qubit)
 \]
 Now, since the second and third qubits are entangled together, we can think of them as being
 spacially together. By applying associativity we model spacial separation:
@@ -457,24 +463,65 @@ spacially together. By applying associativity we model spacial separation:
     (\Qubit \tensor \Qubit^*) \tensor \Qubit
 \]
 The next step is a kind of entanglement, which we saw in \Section{where} is the 
-conjugate-transpose of the first. We represent this step as a unary morphism $C$:
+conjugate-transpose of the first. We represent this step as a unary morphism $U$, where 
+$U = (H \tensor \id_\Qubit) \circ \CNOT$. In the teleportation algorithm, this becomes
 \[
     (\Qubit \tensor \Qubit^*) \tensor \Qubit
-    \xrightarrow{C \tensor \id_\Qubit}
+    \xrightarrow{U \tensor \id_\Qubit}
     (\Qubit \tensor \Qubit^*) \tensor \Qubit.
 \]
 Next we perform measurement. Recalling $\filter_0$ and $\filter_1$ from the previous
 section, let $\filter_{i,j} : \Qubit \tensor \Qubit^* \rightarrow I$ be
-\[  \filter_{i,j} : \Qubit \tensor \Qubit^* \xrightarrow{\filter_i \tensor \filter_j^*}  
-    I \tensor I \xrightarrow{\rho_I} I \]
-and then consider
+\[ \filter_{i,j} = \Qubit \tensor \Qubit^*
+    \xrightarrow{\filter_i \tensor \filter_j^*}
+    I \tensor I
+    \xrightarrow{\lambda_I}
+    I
+\]
+which expands to
+\[
+    \filter_{i,j}(\ket{i'j'}) = \begin{cases}
+        1 & i=i' \text{ and } j=j' \\
+        0 & \text{otherwise}
+    \end{cases}
+\]
+%% \begin{align*}
+%% \begin{aligned}
+%%     \filter_{0,0} \ket{00} &= \sqrt{2} \\
+%%     \filter_{0,0} \ket{01} &= 0 \\
+%%     \filter_{0,0} \ket{10} &= 0 \\
+%%     \filter_{0,0} \ket{11} &= 0 
+%% \end{aligned}
+%% \qquad
+%% \begin{aligned}
+%%     \filter_{0,1} \ket{00} &= 0 \\
+%%     \filter_{0,1} \ket{01} &= \sqrt{2} \\
+%%     \filter_{0,1} \ket{10} &= 0 \\
+%%     \filter_{0,1} \ket{11} &= 0 
+%% \end{aligned}
+%% \qquad
+%% \begin{aligned}
+%%     \filter_{1,0} \ket{00} &= 0 \\
+%%     \filter_{1,0} \ket{01} &= 0 \\
+%%     \filter_{1,0} \ket{10} &= \sqrt{2} \\
+%%     \filter_{1,0} \ket{11} &= 0 
+%% \end{aligned}
+%% \qquad
+%% \begin{aligned}
+%%     \filter_{1,1} \ket{00} &= 0 \\
+%%     \filter_{1,1} \ket{01} &= 0 \\
+%%     \filter_{1,1} \ket{10} &= 0 \\
+%%     \filter_{1,1} \ket{11} &= -\sqrt{2} 
+%% \end{aligned}
+%% \end{align*}
+Then consider
 \[  (\Qubit \tensor \Qubit^*) \tensor \Qubit
     \xrightarrow{\langle \filter_{i,j} \rangle_{i,j} \tensor \id_\Qubit} 
     (4 \cdot I) \tensor \Qubit. 
 \]
-Now, the information of the measurement is located on the left-hand-side of the tensor,
+Now, the information regarding the result of the measurement is located on the left-hand-side of the tensor,
 isolated from the remaining qubit. It is possible to think of the distribution of
-tensor over $\oplus$ as the communication of the classical information (what measurement
+tensor over $\oplus$ as the communication of the Newtonian information (what measurement
 branch we are in) to the location of the qubit. 
 \[
     (4 \cdot I) \tensor \Qubit
@@ -483,15 +530,94 @@ branch we are in) to the location of the qubit.
     \xrightarrow{ \bigoplus \lambda_\Qubit}
     4 \cdot \Qubit
 \]
-Finally, in each branch we need to perform some unitary correction, call it $F_{i,j}$:
+Finally, in each branch we need to perform the unitary correction $\beta_{i,j}$:
 \[
     4 \cdot \Qubit
-    \xrightarrow{ \bigoplus_{i,j} F_{i,j} }
+    \xrightarrow{ \bigoplus_{i,j} \beta_{i,j} }
     4 \cdot \Qubit
 \]
+Recall that we have defined
+\begin{align*}
+\begin{aligned}
+    \beta_{0,0} \ket{0} &= \ket{0} \\
+    \beta_{0,0} \ket{1} &= \ket{1} 
+\end{aligned}
+\qquad
+\begin{aligned}
+    \beta_{0,1} \ket{0} &= \ket{1} \\
+    \beta_{0,1} \ket{1} &= \ket{0} 
+\end{aligned}
+\qquad
+\begin{aligned}
+    \beta_{1,0} \ket{0} &= \ket{0} \\
+    \beta_{1,0} \ket{1} &= -\ket{1} 
+\end{aligned}
+\qquad
+\begin{aligned}
+    \beta_{1,1} \ket{0} &= -\ket{1} \\
+    \beta_{1,1} \ket{1} &= \ket{0} 
+\end{aligned}
+\end{align*}
 
-Given the exact definition of all of these unitary matrices, \cite{abramsky2009categorical}
-prove that the composition of each part of the teleportation protocol really
-does equal $\Delta^4$. In fact, they prove the protocol in a more general categorical
-framework without using the $\Hilb$ instantiation, thereby showing that
-the categorical axiomatization is sufficient to represent quantum teleportation.
+To prove correctness of the teleportation protocol, we show that $\Delta^4$ is
+the composition of each of these steps:
+\begin{align*}
+    \Delta^4 =
+    \Qubit 
+    &\xrightarrow{\rho_\Qubit} \Qubit \tensor I 
+    \xrightarrow {\id_\Qubit \tensor s \bullet \lift{\id_\Qubit}} 
+    \Qubit \tensor (\Qubit^* \tensor \Qubit) \\
+    &\xrightarrow{\alpha_{\Qubit,\Qubit,\Qubit}}
+    (\Qubit \tensor \Qubit^*) \tensor \Qubit \\
+    &\xrightarrow{U \tensor \id_\Qubit}
+    (\Qubit \tensor \Qubit^*) \tensor \Qubit \\
+    &\xrightarrow{\langle \filter_{i,j} \rangle_{i,j} \tensor \id_\Qubit} 
+    (4 \cdot I) \tensor \Qubit \\
+    &\xrightarrow{ \tau }
+    4 \cdot (I \tensor \Qubit) 
+    \xrightarrow{ \bigoplus \lambda_\Qubit} 
+    4 \cdot \Qubit \\
+    &\xrightarrow{ \bigoplus_{i,j} \beta_{i,j} }
+    4 \cdot \Qubit.
+\end{align*}
+The first thing to notice is that 
+\[
+    \langle \filter_{i,j} \rangle_{i,j} \circ U = \langle \filter_{i,j} \circ U \rangle_{i,j}. 
+\]
+Furthermore, it happens to be the case that
+\[ 
+    \filter_{i,j} \circ U = \llower{s^\dagger \bullet \beta_{i,j}^\dagger}.
+\]
+Graphically, we can now represent a single branch of the measurement as follows:
+\begin{center} \begin{tikzpicture}
+    \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
+    \node[invisible] (source)   at (0,1.8)    {};
+    \node[namenode]  (x)        at (2,0)      {$s \smash{\bullet\id_\Qubit}$};
+    \node[conamenode](y)        at (4,1.4)    {$s^\dagger \smash{\bullet \beta_{i,j}^\dagger}$};
+    \node[boxmode]   (z)        at (6,-.7)   {$\beta_{i,j}$};
+    \node[invisible] (target)   at (8,-.7)      {};
+
+    \path (source.north east) edge [above] node {} (y.north west);
+    \path (x.north east) edge [above] node {} (y.south west);
+    \path (x.south east) edge [above] node {} (z.west);
+    \path (z.east) edge [above] node {} (target.west);
+\end{tikzpicture} \end{center}
+But using the compositionality property from \Figure{names}, this is equivalent to
+\begin{center} \begin{tikzpicture}
+    \node[boxmode] (y) at (2,0) {$s^\dagger \bullet \beta_{i,j}^\dagger$};
+    \node[boxmode] (x) at (4,0) {$s \bullet \id_\Qubit$};
+    \node[boxmode] (z) at (6,0) {$\beta_{i,j}$};
+    \path (0,0) edge [above] node {} (y);
+    \path (y)   edge [above] node {} (x);
+    \path (x)   edge [above] node {} (z);
+    \path (z)   edge [above] node {} (8,0);
+\end{tikzpicture} \end{center}
+Because $\beta_{i,j}$ is unitary, their composition is
+\begin{align*}
+    \beta_{i,j} \circ s \bullet \id_\Qubit \circ s^\dagger \bullet \beta_{i,j}^\dagger 
+    &= s^\dagger s \bullet(\beta_{i,j} \circ \id_\Qubit \circ \beta_{i,j}^\dagger) \\
+    &= s^\dagger s \bullet \id_\Qubit
+\end{align*}
+By definition,
+$\Delta^4 = \langle s^\dagger s \bullet \id_\Qubit \rangle_{i=1}^4$, which completes the proof.
+
