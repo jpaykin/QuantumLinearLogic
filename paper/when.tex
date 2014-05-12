@@ -1,0 +1,50 @@
+The categorical axiomatization presented in \Section{how} is one approach of many
+to the mathematical formalization of quantum computation. In this section
+we will briefly touch on some of the past work relating to quantum computation
+and speculate on future directions.
+
+\subsection{Related Work} 
+
+One of the first generic models for quantum computation was the Quantum
+Turing Machine (QTM), introduced by \cite{deutsch1985}. His machine allows for superpositions
+of machine states, mimicking the state of qubits, and is equivalent to the
+quantum circuits used by physicists. With the presence of a universal quantum turing
+machine, all quantum algorithms can be expressed formally in terms of QTMs. 
+
+\cite{selinger2006lambda,selinger2009quantum} describe a higher-order quantum lambda 
+calculus which  takes an important step in introducing abstraction of first-class 
+quantum circuits.
+Their calculus is equipped with a linear type system, which uses subtyping of the
+exponentials to distinguish classical from quantum values. The language introduces
+a number of constants corresponding to $\operatorname{new}$ for pure state preparation,
+$\operatorname{meas}$ for measurement, and constants corresponding to all unitary
+transforamtions. The ability to introduce arbitrary unitary matrices is
+important for expressing known quantum algorithms, but breaks the abstraction 
+bewteen higher-order circuits and unitary matrices.
+
+There are many attempts to develop usable quantum languages for future physical quantum
+computers. \cite{omer2000quantum} developed the langauge QCL, which is a procedural
+quantum language based on C. QCL can be used as a frontend for a quantum simulator,
+although it is designed as a real language for quantum computers. Quipper is another
+language, developed by \cite{green13quipper}, which takes a different approach, in that
+it is a higher-order functional language embedded in Haskell. Compared to QCL,
+the compilation of Quipper code to quantum circuits is formalized. 
+Both languages allow for effectful computation, limited recursion, and automatic
+generation of quantum code from classical functions.
+
+On the semantic side of quantum langauges, there is extensive work in denotational 
+models of quantum computation. \cite{coecke2005kindergarten} presents an
+explicit connection between quantum circuit diagrams and category theoretic 
+commuting diagrams in what he calls ``Kindergarten Quantum Mechanics.''
+Along a similar vein, \cite{abramsky2006categorical} present quantum logic,
+of which there is a large body of work, in the world of category theory with
+the goal of making quantum algorithms more expressible. That work is a precursor
+to Abramsky's model described in \Section{how}.
+
+\subsection{Next steps}
+
+The design of quantum programming languages is in some sense undirected,
+due to the fact that physical quantum computers are still in their infancy.
+\jp{???}
+
+

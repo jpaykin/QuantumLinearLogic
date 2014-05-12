@@ -38,15 +38,15 @@
 \newunicodechar{ψ}{\psi}
 
 \input{Qcircuit}
-\let\bra\relax
-\let\ket\relax
+%\let\bra\relax
+%\let\ket\relax
 \usepackage{braket}
 
 \usepackage[svgnames]{xcolor}
 
 \usepackage{tikz}
 \usetikzlibrary{calc,shapes,arrows,decorations.pathreplacing}
-\input{tikz-qcircuits}
+%\input{tikz-qcircuits}
 \newcommand*{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
 
 \usepackage[section]{placeins} % Floats should stay in their section
@@ -176,8 +176,16 @@
 
 % References
 \newcommand\Figure[1]{Figure~\ref{fig:#1}}
+\newcommand{\Section}[1]{Section~\ref{sec:#1}}
+\newcommand{\Definition}[1]{Definition~\ref{def:#1}}
+\newcommand{\Theorem}[1]{Theorem~\ref{thm:#1}}
 
 \newcommand*\crefme[1]{\textcolor{red}{\{!#1!\}}}
 \newcommand*\citeme[1]{\textcolor{red}{\{?#1?\}}}
 
 \makeatother
+
+\newcommand{\Hilb}{\textsc{Hilb}}
+\newcommand{\inl}{\operatorname{inl}}
+\newcommand{\inr}{\operatorname{inr}}
+\newcommand{\filter}{\operatorname{filter}}

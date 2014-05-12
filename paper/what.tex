@@ -1,6 +1,8 @@
 From quantum mechanics, we learn that the world is defined by Hilbert spaces
 that evolve according to unitary transformations.\citeme{find something}
 
+\jp{Basics of linear algebra eg linear transforamtions as matrices?}
+
 \begin{definition}[Hilbert space]\label{def:hilbert-space}
   \asz{This is a (slightly modified) quote from the Wikipedia article on Hilbert
   spaces; we need something better.}  ``A \term{Hilbert space} $H$ is a complex
@@ -46,6 +48,7 @@ and a bit lies in the word ``measure'': as long as we \emph{don't} measure a
 qubit, it can take on all sorts of crazy states.  Formally, we can represent a
 qubit as an element of $\C^2$ subject to some normalization constraints.
 
+\jp{Choice: complex numbers represented as $a$ or $\alpha$?}
 \begin{definition}[Qubit]\label{def:qubit}
   A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
   such that $|a|^2 + |b|^2 = 1$.  We define $\ket{0}$ and $\ket{1}$ to be the
@@ -173,9 +176,26 @@ all, vector spaces are closed under the Cartesian product.
 But here, too, quantum mechanics departs from our intuitions.  In quantum
 mechanics, when we combine two state spaces, we take their \emph{tensor} product
 instead.  For a fully formal definition of the tensor product \asz{Because \emph{I}
-certainly can't define it.}, consult your favorite textbook on linear algebra,
-such as \citeme{I dunno}; however, we define the relevant operations for the
+certainly can't define it.} \jp{I can, should I?}, consult your favorite textbook on linear algebra,
+such as \cite{gallier13}; however, we define the relevant operations for the
 finite-dimensional vector spaces that we care about.
+
+ 
+A few properties of this tensor
+product are:
+\begin{enumerate}
+    \item If $B_1$ is a basis of $H_1$ and $B_2$ is a basis of $H_2$
+    then $B_1 \times B_2$ is a basis for $H_1 \tensor H_2$.
+    \item For arbitrary $u_1 \in H_1$ and $u_2 \in H_2$, 
+    $u_1 \tensor u_2$ is the equivalence class in $H_1 \tensor H_2$ induced
+    by bilinearity:
+    \begin{align*}
+        \alpha(u_1 \tensor u_2) &= (\alpha u_1) \tensor u_2 \\
+        \alpha(u_1 \tensor u_2) &= u_1 \tensor (\alpha u_2) \\
+        (u_1 \tensor v) + (u_2 \tensor v) &= (u_1 + u_2) \tensor v \\
+        (u \tensor v_1) + (u \tensor v_2) &= u \tensor (v_1 + v_2)
+    \end{align*}
+\end{enumerate}
 
 \begin{definition}[Tensor product]\label{def:tensor-product}
   The \term{tensor product of vectors} $\ket{\phi} \in \C^m$ and $\ket{\psi} \in
@@ -191,7 +211,8 @@ finite-dimensional vector spaces that we care about.
     \in \C^{mn}.
   \]  We also write this as $\ket{\phi}\ket{\psi}$ or $\ket{\phi\psi}$ if there
   will be no ambiguity.
-  
+ 
+
   % "Internal" to the submatrix -- spacing is hard to come by here.
   \def\icdots{\mathclap{\cdots}}
   \def\iddots{\mathclap{\ddots}}
@@ -199,7 +220,64 @@ finite-dimensional vector spaces that we care about.
   \cross q}$ with one-indexed\footnotemark{} entries $u_{ij}$ and $v_{ij}$,
   respectively, is the $mp \cross nq$ matrix whose entries are the pairwise
   products of the entries in $U$ and the entries in $V$.  More precisely, we
-  have \begin{gather*}
+  have 
+  %% \begin{gather*}
+  %%   U \tensor V =
+  %%   \begin{pmatrix}
+  %%     u_{11}V & u_{21}V & \cdots & u_{m1}V \\
+  %%     u_{12}V & u_{22}V & \cdots & u_{m2}V \\
+  %%     \vdots & \vdots & \ddots & \vdots \\
+  %%     u_{1n}V & u_{2n}V & \cdots & u_{mn}V
+  %%   \end{pmatrix} \\ =
+  %%   \left(\begin{array}{@{}*{2}{c@{\;\;}ccc}cc@{\;\;}ccc@{}}
+  %%     u_{11}v_{11} & u_{11}v_{21} & \icdots & u_{11}v_{p1} &
+  %%     u_{21}v_{11} & u_{21}v_{21} & \icdots & u_{21}v_{p1} &
+  %%     \cdots &
+  %%     u_{m1}v_{11} & u_{m1}v_{21} & \icdots & u_{m1}v_{p1}
+  %%     \\
+  %%     u_{11}v_{12} & u_{11}v_{22} & \icdots & u_{11}v_{p2} &
+  %%     u_{21}v_{12} & u_{21}v_{22} & \icdots & u_{21}v_{p2} &
+  %%     \cdots &
+  %%     u_{m1}v_{12} & u_{m1}v_{22} & \icdots & u_{m1}v_{p2}
+  %%     \\
+  %%     \vdots & \vdots & \iddots & \vdots &
+  %%     \vdots & \vdots & \iddots & \vdots &
+  %%     \cdots &
+  %%     \vdots & \vdots & \iddots & \vdots
+  %%     \\
+  %%     u_{11}v_{1q} & u_{11}v_{2q} & \icdots & u_{11}v_{pq} &
+  %%     u_{21}v_{1q} & u_{21}v_{2q} & \icdots & u_{21}v_{pq} &
+  %%     \cdots &
+  %%     u_{m1}v_{1q} & u_{m1}v_{2q} & \icdots & u_{m1}v_{pq}
+  %%     \\
+  %%     \vdots & \vdots & \vdots & \vdots &
+  %%     \vdots & \vdots & \vdots & \vdots &
+  %%     \ddots &
+  %%     \vdots & \vdots & \vdots & \vdots
+  %%     \\
+  %%     u_{1n}v_{11} & u_{1n}v_{21} & \icdots & u_{1n}v_{p1} &
+  %%     u_{2n}v_{11} & u_{2n}v_{21} & \icdots & u_{2n}v_{p1} &
+  %%     \cdots &
+  %%     u_{mn}v_{11} & u_{mn}v_{21} & \icdots & u_{mn}v_{p1}
+  %%     \\
+  %%     u_{1n}v_{12} & u_{1n}v_{22} & \icdots & u_{1n}v_{p2} &
+  %%     u_{2n}v_{12} & u_{2n}v_{22} & \icdots & u_{2n}v_{p2} &
+  %%     \cdots &
+  %%     u_{mn}v_{12} & u_{mn}v_{22} & \icdots & u_{mn}v_{p2}
+  %%     \\
+  %%     \vdots & \vdots & \iddots & \vdots &
+  %%     \vdots & \vdots & \iddots & \vdots &
+  %%     \cdots &
+  %%     \vdots & \vdots & \iddots & \vdots
+  %%     \\
+  %%     u_{1n}v_{1q} & u_{1n}v_{2q} & \icdots & u_{1n}v_{pq} &
+  %%     u_{2n}v_{1q} & u_{2n}v_{2q} & \icdots & u_{2n}v_{pq} &
+  %%     \cdots &
+  %%     u_{mn}v_{1q} & u_{mn}v_{2q} & \icdots & u_{mn}v_{pq}
+  %%   \end{array}\right) \\ \in \C^{mp \cross nq} % Add back in if there's space
+  %% \end{gather*}
+  %%
+  \begin{gather*}
     U \tensor V =
     \begin{pmatrix}
       u_{11}V & u_{21}V & \cdots & u_{m1}V \\
@@ -208,55 +286,71 @@ finite-dimensional vector spaces that we care about.
       u_{1n}V & u_{2n}V & \cdots & u_{mn}V
     \end{pmatrix} \\ =
     \left(\begin{array}{@{}*{2}{c@{\;\;}ccc}cc@{\;\;}ccc@{}}
-      u_{11}v_{11} & u_{11}v_{21} & \icdots & u_{11}v_{p1} &
-      u_{21}v_{11} & u_{21}v_{21} & \icdots & u_{21}v_{p1} &
+      u_{11}v_{11} & \icdots & u_{11}v_{p1} &
+      u_{21}v_{11} & \icdots & u_{21}v_{p1} &
       \cdots &
-      u_{m1}v_{11} & u_{m1}v_{21} & \icdots & u_{m1}v_{p1}
+      u_{m1}v_{11} & \icdots & u_{m1}v_{p1}
       \\
-      u_{11}v_{12} & u_{11}v_{22} & \icdots & u_{11}v_{p2} &
-      u_{21}v_{12} & u_{21}v_{22} & \icdots & u_{21}v_{p2} &
+      \vdots & \iddots & \vdots &
+      \vdots & \iddots & \vdots &
       \cdots &
-      u_{m1}v_{12} & u_{m1}v_{22} & \icdots & u_{m1}v_{p2}
+      \vdots & \iddots & \vdots
       \\
-      \vdots & \vdots & \iddots & \vdots &
-      \vdots & \vdots & \iddots & \vdots &
+      u_{11}v_{1q} & \icdots & u_{11}v_{pq} &
+      u_{21}v_{1q} & \icdots & u_{21}v_{pq} &
       \cdots &
-      \vdots & \vdots & \iddots & \vdots
+      u_{m1}v_{1q} & \icdots & u_{m1}v_{pq}
       \\
-      u_{11}v_{1q} & u_{11}v_{2q} & \icdots & u_{11}v_{pq} &
-      u_{21}v_{1q} & u_{21}v_{2q} & \icdots & u_{21}v_{pq} &
-      \cdots &
-      u_{m1}v_{1q} & u_{m1}v_{2q} & \icdots & u_{m1}v_{pq}
-      \\
-      \vdots & \vdots & \vdots & \vdots &
-      \vdots & \vdots & \vdots & \vdots &
+      \vdots & \vdots & \vdots &
+      \vdots & \vdots & \vdots &
       \ddots &
-      \vdots & \vdots & \vdots & \vdots
+      \vdots & \vdots & \vdots
       \\
-      u_{1n}v_{11} & u_{1n}v_{21} & \icdots & u_{1n}v_{p1} &
-      u_{2n}v_{11} & u_{2n}v_{21} & \icdots & u_{2n}v_{p1} &
+      u_{1n}v_{11} & \icdots & u_{1n}v_{p1} &
+      u_{2n}v_{11} & \icdots & u_{2n}v_{p1} &
       \cdots &
-      u_{mn}v_{11} & u_{mn}v_{21} & \icdots & u_{mn}v_{p1}
+      u_{mn}v_{11} & \icdots & u_{mn}v_{p1}
       \\
-      u_{1n}v_{12} & u_{1n}v_{22} & \icdots & u_{1n}v_{p2} &
-      u_{2n}v_{12} & u_{2n}v_{22} & \icdots & u_{2n}v_{p2} &
+      \vdots & \iddots & \vdots &
+      \vdots & \iddots & \vdots &
       \cdots &
-      u_{mn}v_{12} & u_{mn}v_{22} & \icdots & u_{mn}v_{p2}
+      \vdots & \iddots & \vdots
       \\
-      \vdots & \vdots & \iddots & \vdots &
-      \vdots & \vdots & \iddots & \vdots &
+      u_{1n}v_{1q} & \icdots & u_{1n}v_{pq} &
+      u_{2n}v_{1q} & \icdots & u_{2n}v_{pq} &
       \cdots &
-      \vdots & \vdots & \iddots & \vdots
-      \\
-      u_{1n}v_{1q} & u_{1n}v_{2q} & \icdots & u_{1n}v_{pq} &
-      u_{2n}v_{1q} & u_{2n}v_{2q} & \icdots & u_{2n}v_{pq} &
-      \cdots &
-      u_{mn}v_{1q} & u_{mn}v_{2q} & \icdots & u_{mn}v_{pq}
-    \end{array}\right) \\ \in \C^{mp \cross nq}.
+      u_{mn}v_{1q} & \icdots & u_{mn}v_{pq}
+    \end{array}\right).% \\ \in \C^{mp \cross nq} % Add back in if there's space
   \end{gather*}
 
   \footnotetext{Solely for space reasons.}
 \end{definition}
+
+The no-cloning theorem says there is no way to produce two copies of a single 
+arbitrary quantum state. To be more precise, the no-cloning theorem states that
+there is no unitary transformation which can duplicate every possible quantum state.
+
+\begin{theorem}[No-Cloning \citeme{cite}]
+    There is no unitary transformation acting on qubits as follows:
+    \[ U(\ket{0}\tensor\ket{\varphi}) = \ket{\varphi}\tensor\ket{\varphi}.\]
+\end{theorem}
+\begin{proof}
+    Suppose there were such a transformation. We may expand an arbitrary $\ket{\varphi}$
+    as $\varphi = \alpha\ket{0} + \beta\ket{1}$. By the definition of $U$, we know
+    \begin{align*} 
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \ket{\varphi} \tensor \ket{\varphi} \\
+        &= (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1}) \\
+        &= \alpha^2 \ket{00} + \alpha\beta\ket{01} + \alpha\beta\ket{10} + \beta^2\ket{11}.
+    \end{align*}
+    However, since all unitary transformations are necessarily linear, we can also compute
+    \begin{align*}
+        U(\ket{0} \tensor \ket{\varphi})
+        &= \alpha U(\ket{0} \tensor \ket{0}) + \beta U(\ket{0} \tensor \ket{1}) \\
+        &= \alpha \ket{00} + \beta \ket{11}.
+    \end{align*}
+    These two expansions are unequal, thus we have reached a contradiction. 
+\end{proof}
 
 Thus, when we are considering $n$-qubit systems, we find ourselves in a
 $2^n$-dimensional complex vector space.  The basis vectors in this space are the
