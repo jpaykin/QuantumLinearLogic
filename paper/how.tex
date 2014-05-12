@@ -9,9 +9,9 @@ In this section we will provide an overview of their theory and use it to descri
 teleportation algorithm given in \Section{where}.
 
 Category theory is a powerful tool for describing the algebraic structure of
-various mathematical constructions. Category theory allows for axiomatic descriptions
-of mathematical structures and relationships between structures. These axiomatic
-properties can then be instantiated with concrete mathematical structures, like sets,
+various mathematical constructions. It allows for the axiomatic description
+of mathematical structures and relationships between structures. These axiomatizations
+can then be instantiated with concrete mathematical models, like sets,
 vector spaces, algebras, et cetera. 
 
 In connection to the theory of computation, category theory can be used as a semantic
@@ -27,17 +27,17 @@ but the semantic domain is very well understood---Hilbert spaces.
 Is there any reason to leave this familiar space and move to the abstract domain of category theory?
 The hope is that by examining the fundamental structure of Hilbert spaces that makes it possible
 to encode quantum algorithms, it will be easier to understand what a language for
-quantum computation should look like. It is a step for working backwards, not forwards,
+quantum computation could look like. It is a step for working backwards, not forwards,
 on the categorical semantic chain.
 
-When developing categorical notions, we will use the category $\Hilb$ of finite-dimensional
-hilbert spaces as a running example. The objects are finite-dimensional hilbert spaces,
-and the morphisms are linear transformations. \jp{Not necessarily unitary...}
 
 A certain amount of familiarity with category theory is expected: objects, morphisms,
 functors and natural transformations.
+When developing categorical notions, we will use the category $\Hilb$ of finite-dimensional
+Hilbert spaces as a running example. The objects are finite-dimensional Hilbert spaces,
+and the morphisms are linear transformations. \jp{Not necessarily unitary...}
 
-\subsection{Symmetric Monoidal Categories and the No-Cloning Theorem}
+\subsection{Symmetric Monoidal Categories and the Tensor Product}
 
 \begin{definition}
 A symmetric monoidal category $C$ consists of a bifunctor $\tensor$
@@ -57,26 +57,9 @@ various ways \jp{Cite}.
 \subsubsection*{Example}
 The category $\Hilb$ is symmetric monoidal, where the tensor product
 is the regular tensor product on vector spaces. Notice that $\tensor$ is
-in fact a functor---it is defined both on objects ($H_1 \tensor H_2$ is a hilbert space)
-and on morphisms
-
-\jp{Move to What section}
-A few properties of this tensor
-product are:
-\begin{enumerate}
-    \item If $B_1$ is a basis of $H_1$ and $B_2$ is a basis of $H_2$
-    then $B_1 \times B_2$ is a basis for $H_1 \tensor H_2$.
-    \item For arbitrary $u_1 \in H_1$ and $u_2 \in H_2$, 
-    $u_1 \tensor u_2$ is the equivalence class in $H_1 \tensor H_2$ induced
-    by bilinearity:
-    \begin{align*}
-        \alpha(u_1 \tensor u_2) &= (\alpha u_1) \tensor u_2 \\
-        \alpha(u_1 \tensor u_2) &= u_1 \tensor (\alpha u_2) \\
-        (u_1 \tensor v) + (u_2 \tensor v) &= (u_1 + u_2) \tensor v \\
-        (u \tensor v_1) + (u \tensor v_2) &= u \tensor (v_1 + v_2)
-    \end{align*}
-\end{enumerate}
-The unit of the tensor is the underlying field, with the basis $B = \{ \unit \}$.
+in fact a functor---it is defined both on objects ($H_1 \tensor H_2$ is a Hilbert space)
+and on morphisms (matrices).
+The unit of the tensor is the underlying field $\C$, with the basis $B = \{ \unit \}$.
 
 The tensor can be thought of as a new kind of composition. Traditional
 sequential composition is given by the categorical composition of two morphisms:
@@ -112,10 +95,31 @@ in D and a natural transformation
 \[ m_{A,B}^F : F A \tensor F B \rightarrow F(A \tensor B). \]
 Again, these morphisms must commute with the monoidal structures in $C$ and $D$
 in certain ways not outlined here. 
-\end{definition}
 
 A monoidal natural transformation between two symmetric monoidal functors
 is a natural transformation that commutes with the monoidal components $m_I$ and $m_{A,B}$.
+\end{definition}
+
+\subsubsection*{States and Scalars}
+There is no default way to talk about the internal structure of objects in category theory,
+but the unit of monoidal categories give a kind of work-around. Consider a morphism 
+$f : I \rightarrow A$. In $\Hilb$ where $I=\mathcal{C}$, $f$ is uniquely defined by where it sends
+the basis element $1$ of $I$. Thus $f(1)$ uniquely identifies a vector in $A$. We call such morphisms
+\emph{states} and refer to them as $\Ket{\varphi}$.\footnotemark
+
+\footnotetext{A costate $\Bra{\psi}$ is $\varphi^\dagger : A \rightarrow I$; the $(-)^\dagger$ operator 
+is defined later in the section.}
+
+When $f : I \rightarrow I$, $f(1)$ picks out an element in $\C$---a complex number.
+Therefore we treat such a morphism as a \emph{scalar}.
+Scalars defined in this way give rise to a notion of scalar multiplication: for 
+$\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
+\[ \alpha \bullet f : A \xrightarrow{\rho_A^{-1}} A \tensor I
+    \xrightarrow{f \tensor \alpha} B \tensor I
+    \xrightarrow{\rho_B} B.
+\]
+It is easy to demonstrate that scalar multiplication is in fact linear in $\alpha$.
+
 
 \subsection{Compact Closed Categories: Names and Conames}
 
@@ -265,6 +269,14 @@ $=$
 \end{figure}
 
 
+\subsubsection*{Example} In $\Hilb$, consider that
+\[ \lift{\id_I}(1) = \ket{00} + \ket{11}, \]
+which is an entangled state. By scalar multiplication with the constant
+$s(1)=\frac 1 {\sqrt{2}}$, we can obtain the normalized state 
+$s \bullet \lift{id_I}$ corresponding to 
+\[ \frac {\ket{00} + \ket{11}} {\sqrt{2}}. \]
+In general, names correspond to preparations of entangled states.
+
 \subsection{Strong Compact Closure and the Inner Product}
 
 So far we have not touched on the notion of inner product in terms of the category theory.
@@ -299,22 +311,6 @@ A morphism $f$ is called \emph{unitary} if $f$ is an isomorphism and $f^{-1}=f^\
     \]
 \end{definition}
 
-In order to define the inner product, we need to define the domain of the inner product--states--and
-the codomain of the inner product--scalars. Of course, category theory gives us no way to explicitly
-talk about the content of objects, but we can simulate it using the monadic unit. Consider a morphism
-$f : I \rightarrow A$. In $\Hilb$ where $I=\mathcal{C}$, $f$ is uniquely defined by where it sends
-the basis element $1$ of $I$. Thus $f(1)$ uniquely identifies a vector in $A$. We call such morphisms
-\emph{states} and refer to them as $\Ket{\varphi}$. A state $\Bra{\psi}$ is $\varphi^\dagger : A \rightarrow I$.
-
-When $f : I \rightarrow I$, $f(1)$ picks out an element in the unit; for $\Hilb$ this is a complex
-number. Therefore we treat such a morphism as a \emph{scalar} and refer to them as $\alpha$.
-Scalars defined in this way give rise to a notion of scalar multiplication: for 
-$\alpha : I \rightarrow I$ and $f : A \rightarrow B$, define
-\[ \alpha \bullet f : A \xrightarrow{\rho_A^{-1}} A \tensor I
-    \xrightarrow{f \tensor \alpha} B \tensor I
-    \xrightarrow{\rho_B} B.
-\]
-It is easy to demonstrate that scalar multiplication is in fact linear in $\alpha$.
 
 Now, the inner product of two states $\Ket{\varphi}$ and $\Ket{\psi}$
 is just the scalar
@@ -329,10 +325,10 @@ As expected from quantum theory, unitary morphisms preserve the inner product:
 \end{align*}
 
 In $\Hilb$, $(-)^*$ is the transpose operation and $(-)^\dagger$ is the conjugate-transpose.
-We would like to formalize the relationship between the two kinds of duality. In particular, if 
-$(-)_*$ is a covariant complex conjugation operation, then $f^\dagger = (f_*)^* = (f^*)_*$.
-Categorically, define $(-)_*$ to act as $(-)^*$ on objects, and on morphisms $f: A \rightarrow B$,
-define 
+We would like to formalize the relationship between these two kinds of duality. 
+In particular, if $(-)_*$ is a covariant complex conjugation operation, then 
+$f^\dagger = (f_*)^* = (f^*)_*$. Categorically, define $(-)_*$ to act as $(-)^*$ on objects, 
+and on morphisms $f: A \rightarrow B$, define 
 \[ f_* = (f^\dagger)^* : A^* \rightarrow B^*. \]
 
 \subsection{Measurement via Biproducts}
@@ -414,3 +410,88 @@ quantum measurement branches $B$ and $C$. The information is not considered to b
 because $B$ and $C$ never occur together. As we shall see in the teleportation
 example, the distributivity really corresponds to classical transmission of data.
 In particular, the speed of this transmission is limited by the speed of light.
+
+\subsubsection*{Qubits: Putting it all together}
+
+Recall that in $\Hilb$, the space of qubits is
+\[ \Qubit = \{(a,b) \in \C^2 \mid a^2 + b^2=1 \}. \]
+There is nothing special about this object categorically, 
+but we can utilize the categorical structure to define
+measurement of a qubit.
+
+Let $\filter_0,\filter_1 : \Qubit \rightarrow I$ be morphisms in $\Hilb$ as follows:
+\begin{align*} \begin{aligned}
+    \filter_0(\ket{0}) &= 1 \\
+    \filter_0(\ket{1}) &= 0 
+\end{aligned} \qquad\qquad \begin{aligned}
+    \filter_1(\ket{0}) &= 0 \\
+    \filter_1(\ket{1}) &= 1
+\end{aligned} \end{align*}
+Define $\meas : \Qubit \rightarrow I \oplus I$ as $\meas = \langle \filter_0, \filter_1 \rangle$.
+When applied to a qubit, $\meas$ produces two measurement branches, one of which 
+contains the state of the qubit if $\ket{0}$ was measured, and one of which contains
+the state if $\ket{1}$ was measured. In particular,
+\[ \meas(\alpha\ket{0} + \beta\ket{1}) = \inl \alpha + \inr \beta. \]
+
+\subsection{Teleportation}
+
+What is the intended behavior of teleportation? We start out with a single qubit $\ket{\varphi}$
+and end up in four distinct measurment brances: $\Qubit \oplus \Qubit \oplus \Qubit \oplus \Qubit$.
+(We will write this sum as $4 \cdot \Qubit$.) We want each of these branches to reflect the value
+$\ket{\varphi}$, so the intended behavior of teleportation is just
+\[ \Delta^4 := \langle  \id_\Qubit \rangle_{i=1}^{4} : \Qubit \rightarrow 4 \cdot \Qubit. \]
+Next we will trace out the parts of the teleportation algorithm in terms of the categorical 
+structures developed in this section.
+First we wish to produce the pair of qubits entangled by Alice and Bob. We saw that this entanglement
+is constructed as $s \bullet \lift{\id_{\Qubit}}$ where $s(1)=\frac 1 {\sqrt{2}}$. Together with the state 
+$\ket{\varphi}$ we so far have
+\[
+    \Qubit \xrightarrow{\rho_\Qubit} \Qubit \tensor I 
+    \xrightarrow {\id_\Qubit \tensor s \bullet \lift{\id_\Qubit}} \Qubit \tensor (\Qubit^* \tensor \Qubit)
+\]
+Now, since the second and third qubits are entangled together, we can think of them as being
+spacially together. By applying associativity we model spacial separation:
+\[
+    \Qubit \tensor (\Qubit^* \tensor \Qubit) 
+    \xrightarrow{\alpha_{\Qubit,\Qubit,\Qubit}}
+    (\Qubit \tensor \Qubit^*) \tensor \Qubit
+\]
+The next step is a kind of entanglement, which we saw in \Section{where} is the 
+conjugate-transpose of the first. We represent this step as a unary morphism $C$:
+\[
+    (\Qubit \tensor \Qubit^*) \tensor \Qubit
+    \xrightarrow{C \tensor \id_\Qubit}
+    (\Qubit \tensor \Qubit^*) \tensor \Qubit.
+\]
+Next we perform measurement. Recalling $\filter_0$ and $\filter_1$ from the previous
+section, let $\filter_{i,j} : \Qubit \tensor \Qubit^* \rightarrow I$ be
+\[  \filter_{i,j} : \Qubit \tensor \Qubit^* \xrightarrow{\filter_i \tensor \filter_j^*}  
+    I \tensor I \xrightarrow{\rho_I} I \]
+and then consider
+\[  (\Qubit \tensor \Qubit^*) \tensor \Qubit
+    \xrightarrow{\langle \filter_{i,j} \rangle_{i,j} \tensor \id_\Qubit} 
+    (4 \cdot I) \tensor \Qubit. 
+\]
+Now, the information of the measurement is located on the left-hand-side of the tensor,
+isolated from the remaining qubit. It is possible to think of the distribution of
+tensor over $\oplus$ as the communication of the classical information (what measurement
+branch we are in) to the location of the qubit. 
+\[
+    (4 \cdot I) \tensor \Qubit
+    \xrightarrow{ \tau }
+    4 \cdot (I \tensor \Qubit) 
+    \xrightarrow{ \bigoplus \lambda_\Qubit}
+    4 \cdot \Qubit
+\]
+Finally, in each branch we need to perform some unitary correction, call it $F_{i,j}$:
+\[
+    4 \cdot \Qubit
+    \xrightarrow{ \bigoplus_{i,j} F_{i,j} }
+    4 \cdot \Qubit
+\]
+
+Given the exact definition of all of these unitary matrices, \cite{abramsky2009categorical}
+prove that the composition of each part of the teleportation protocol really
+does equal $\Delta^4$. In fact, they prove the protocol in a more general categorical
+framework without using the $\Hilb$ instantiation, thereby showing that
+the categorical axiomatization is sufficient to represent quantum teleportation.
