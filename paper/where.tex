@@ -1,11 +1,13 @@
 Now that we have seen all these pieces, we can put them all together in the
 \term{quantum teleportation} algorithm, whose circuit diagram can be seen in
 \cref{qcd:teleportation}.  Although the no-cloning theorem
-(\cref{thm:no-cloning}) prevents us from copying arbitrary qubits, teleportation
-allows us to \emph{move} a qubit state; by using an auxiliary entangled pair of
-qubits, it does this without actually transmitting a qubit through space.  This
-circuit does duplicate two wires; however, those wires have Newtonian bits, and
-so behave according to traditional rules of computation.
+(\cref{thm:no-cloning}) prevents us from copying arbitrary qubits,
+we are allowed to copy arbitrary \emph{Newtonian} bits, which are not
+restricted by the laws of linearity.
+In the teleportation algorithm, instead of transmitting a qubit
+through space (represented by a pair
+of complex numbers) we will see that it suffices to send a (duplicated) pair of 
+Newtonian bits.
 
 \begin{figure}
   \centerline{\Qcircuit{
@@ -101,34 +103,9 @@ $\CNOT$ and $H$ are both Hermitian, we know that $E^\dag = (\CNOT \mtimes (H
 first.  However, we are applying $E^\dag$ to different qubits than we applied
 $E$ to initially, so $E$'s effects are not undone.
 
-\asz{Oops, I don't use this.}%
-To understand the effects of $E^\dag$, it is easiest to look at the effects of
-$E$, and then read them backwards.  It is easy to verify that applying $E$ to
-the basis vectors produces states that are either perfectly correlated or
-perfectly anticorrelated: \[
-\begin{array}{c@{\qquad}c}
-  E\ket{00} = \dfrac{\ket{00} + \ket{11}}{\sqrt{2}} &
-  E\ket{01} = \dfrac{\ket{01} + \ket{10}}{\sqrt{2}} \\[4ex]
-  E\ket{10} = \dfrac{\ket{00} - \ket{11}}{\sqrt{2}} &
-  E\ket{11} = \dfrac{\ket{01} - \ket{10}}{\sqrt{2}}
-\end{array}
-\] This works because \[ H\ket{0} = \frac{\ket{0} + \ket{1}}{\sqrt{2}}
-\text{ and } H\ket{1} = \frac{\ket{0} - \ket{1}}{\sqrt{2}}, \] and then the
-$\CNOT$ flips the second bit only when the first bit is zero.
-
-Consequently, the behavior of $E^\dag$ must be to invert this, and so transform
-entangled superpositions into ordinary basis states: \[
-\begin{array}{c@{\qquad}c}
-  E^\dag \dfrac{\ket{00} + \ket{11}}{\sqrt{2}} = \ket{00} &
-  E^\dag \dfrac{\ket{01} + \ket{10}}{\sqrt{2}} = \ket{01} \\[4ex]
-  E^\dag \dfrac{\ket{00} - \ket{11}}{\sqrt{2}} = \ket{10} &
-  E^\dag \dfrac{\ket{01} - \ket{10}}{\sqrt{2}} = \ket{11}
-\end{array}
-\]
-We can use this to work out the state of the system at this point (immediately
-prior to the measurement).  As input, we were given a system in the state \[
-  \ket{\Psi_1} = \frac{\ket{\psi00} + \ket{\psi11}}{\sqrt{2}};
-\] expanding out
+To see the effect of $E^\dag$, recall that we are starting in the state \[
+  \ket{\Psi_1} = \frac{\ket{\psi00} + \ket{\psi11}}{\sqrt{2}}.
+\] Expanding out
 the definition of $\psi$ lets us write this as \[
   \ket{\Psi_1} = \frac{ \psi_0\ket{000} + \psi_1\ket{100}
                       + \psi_0\ket{011} + \psi_1\ket{111}}
@@ -140,13 +117,12 @@ to the very first one.  Applying $\CNOT$ produces the state \[
                        + \psi_0\ket{011} + \psi_1\ket{101}}
                        {\sqrt{2}},
 \] and applying $H$ to that gives the final state \[
-  \ket{\Psi_2} = \frac{ \psi_0\ket{000} + \psi_0\ket{100}
-                      + \psi_1\ket{010} - \psi_1\ket{110}
-                      + \psi_0\ket{011} + \psi_0\ket{111}
-                      + \psi_1\ket{001} - \psi_1\ket{101}}
+  \ket{\Psi_2} = \frac{ \psi_0(\ket{000} + \ket{100})
+                      + \psi_1(\ket{010} - \ket{110})
+                      + \psi_0(\ket{011} + \ket{111})
+                      + \psi_1(\ket{001} - \ket{101})}
                       {2}.
-\]  It is clearer to write this state with its coefficients in the usual order,
-as
+\]  Reordering the states, this is written as
 \begin{gather*}
   \ket{\Psi_2} = \frac{ \psi_0\ket{000}
                       + \psi_1\ket{001}
@@ -157,10 +133,10 @@ as
                       - \psi_1\ket{101}
                       + \psi_0\ket{111}}
                       {2} \\
-               = \vector{\pos\psi_0 \pos\psi_1 \pos\psi_1 \pos\psi_0
+               = \frac 1 2 \vector{\pos\psi_0 \pos\psi_1 \pos\psi_1 \pos\psi_0
                          \pos\psi_0    -\psi_1    -\psi_1 \pos\psi_0}.
 \end{gather*}
-This state is thoroughly entangled: although the $\psi_0$s and $\psi_1$s repeat
+The state is thoroughly entangled: although the $\psi_0$s and $\psi_1$s repeat
 their pattern of four twice, the two negative signs prevent the state from being
 separable.
 
@@ -196,7 +172,7 @@ us into one four possible worlds:
     &&= \ket{11} \tensor{\ket{\psi'_{11}}},
 \end{alignat*}
 \endgroup
-where $X$ is bitwise negation, as before, and $Z$ is the unitary
+where $X$ is bitwise negation as before, and $Z$ is the unitary
 matrix \[ Z = \begin{pmatrix} 1 & \pos0 \\ 0 & -1 \end{pmatrix} \] that flips
 the sign of the probability amplitude of $\ket{1}$.
 
@@ -205,8 +181,9 @@ Now that the whole system is in the state $\ket{\Psi_{3,xy}} =
 \ket{xy}\tensor\ket{\psi'_{xy}}$, Alice needs to let Bob know just which of the
 $\ket{\psi'_{xy}}$ he has.  Thus, she simply sends him the two bits $(x,y)$.
 These two bits alone are not enough to learn anything about $\ket{\psi}$; as we
-saw above, they were obtained uniformly at random.  But without these two bits,
-Bob's qubit is essentially equally random.  Bob cannot learn anything from his
+saw above, they were obtained uniformly at random. Furthermore, without
+these two bits, Bob's qubit is essentially random.
+Bob cannot learn anything from his
 qubit without measuring it, and -- since he does not know which of the
 $\ket{xy}$ Alice measured -- we can see that the aggregate probability of
 measuring $\ket{0}$ is equal to that of measuring $\ket{1}$ when we look at all
@@ -214,7 +191,7 @@ of the $\ket{\Psi_{3,xy}}$ taken together.  Thus, no information about
 $\ket{\psi}$ is present in either the Newtonian bits or Bob's qubit; it is only
 by bringing them together that Bob can learn what $\ket{\psi}$ was!%
 \footnote{This means that quantum mechanics cannot send information faster than
-  light, and so does not violate relativity; until the classical bits are sent
+  light, and so does not violate relativity; until the Newtonian bits are sent
   in an ordinary manner (which means at most at the speed of light), Bob does
   not know what $\psi$ was.  This also means that intercepting the classical
   message provides no information, so as long as the qubits are private, this
