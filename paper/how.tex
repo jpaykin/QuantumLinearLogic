@@ -3,7 +3,7 @@ of quantum mechanics---superposition, measurement, and wires.
 But if we want quantum computation to be an area of study for the sake of
 computation itself, then computer scientists need to find a way to align
 the language of quantum mechanics with the language of programming.
-The approach we describe in this section is the work of \cite{abramsky2009categorical},
+The approach we describe in this section is the work of \citet{abramsky2009categorical},
 which axiomatizes the major properties of quantum mechanics and logic as a categorical model.
 In this section we will provide an overview of their theory and use it to describe the
 teleportation algorithm given in \cref{sec:where}.
@@ -32,7 +32,7 @@ on the categorical semantic chain.
 
 In this section a certain amount of familiarity with category theory is expected,
 including objects, morphisms, functors and natural transformations. 
-For the unfamiliar reader, \cite{pierce1991basic} provides a good introduction for
+For the unfamiliar reader, \citet{pierce1991basic} provides a good introduction for
 computer scientists.
 
 When developing our categorical notions, we will use the category $\Hilb$ of finite-dimensional
@@ -53,7 +53,7 @@ and a unit $I$, along with natural isormorphisms:
     \sigma_{A,B} : A \tensor B \rightarrow B \tensor A \\
 \end{align*}
 In addition, the monoidal structure must commute with the isomorphisms in 
-various ways. For full details, see \cite{bierman1995categorical}.
+various ways. For full details, see \citet{bierman1995categorical}.
 \end{definition}
 
 \subsubsection*{Example}
