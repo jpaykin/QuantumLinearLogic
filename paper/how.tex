@@ -530,32 +530,32 @@ branch we are in) to the location of the qubit.
     \xrightarrow{ \bigoplus \lambda_\Qubit}
     4 \cdot \Qubit
 \]
-Finally, in each branch we need to perform the unitary correction $\beta_{i,j}$:
+Finally, in each branch we need to perform the unitary correction $F_{i,j}$:
 \[
     4 \cdot \Qubit
-    \xrightarrow{ \bigoplus_{i,j} \beta_{i,j} }
+    \xrightarrow{ \bigoplus_{i,j} F_{i,j} }
     4 \cdot \Qubit
 \]
 Recall that we have defined
 \begin{align*}
 \begin{aligned}
-    \beta_{0,0} \ket{0} &= \ket{0} \\
-    \beta_{0,0} \ket{1} &= \ket{1} 
+    F_{0,0} \ket{0} &= \ket{0} \\
+    F_{0,0} \ket{1} &= \ket{1} 
 \end{aligned}
 \qquad
 \begin{aligned}
-    \beta_{0,1} \ket{0} &= \ket{1} \\
-    \beta_{0,1} \ket{1} &= \ket{0} 
+    F_{0,1} \ket{0} &= \ket{1} \\
+    F_{0,1} \ket{1} &= \ket{0} 
 \end{aligned}
 \qquad
 \begin{aligned}
-    \beta_{1,0} \ket{0} &= \ket{0} \\
-    \beta_{1,0} \ket{1} &= -\ket{1} 
+    F_{1,0} \ket{0} &= \ket{0} \\
+    F_{1,0} \ket{1} &= -\ket{1} 
 \end{aligned}
 \qquad
 \begin{aligned}
-    \beta_{1,1} \ket{0} &= -\ket{1} \\
-    \beta_{1,1} \ket{1} &= \ket{0} 
+    F_{1,1} \ket{0} &= -\ket{1} \\
+    F_{1,1} \ket{1} &= \ket{0} 
 \end{aligned}
 \end{align*}
 
@@ -577,7 +577,7 @@ the composition of each of these steps:
     4 \cdot (I \tensor \Qubit) 
     \xrightarrow{ \bigoplus \lambda_\Qubit} 
     4 \cdot \Qubit \\
-    &\xrightarrow{ \bigoplus_{i,j} \beta_{i,j} }
+    &\xrightarrow{ \bigoplus_{i,j} F_{i,j} }
     4 \cdot \Qubit.
 \end{align*}
 The first thing to notice is that 
@@ -586,16 +586,16 @@ The first thing to notice is that
 \]
 Furthermore, it happens to be the case that
 \[ 
-    \filter_{i,j} \circ U = \llower{s^\dagger \bullet \beta_{i,j}^\dagger}.
+    \filter_{i,j} \circ U = \llower{s^\dagger \bullet F_{i,j}^\dagger}.
 \]
 Graphically, we can now represent a single branch of the measurement as follows:
 \begin{center} \begin{tikzpicture}
     \tikzset{invisible/.style={rectangle, minimum height=1.6em}}
     \node[invisible] (source)   at (0,1.8)    {};
     \node[namenode]  (x)        at (2,0)      {$s \smash{\bullet\id_\Qubit}$};
-    \node[conamenode](y)        at (4,1.4)    {$s^\dagger \smash{\bullet \beta_{i,j}^\dagger}$};
-    \node[boxmode]   (z)        at (6,-.7)   {$\beta_{i,j}$};
-    \node[invisible] (target)   at (8,-.7)      {};
+    \node[conamenode](y)        at (4,1.4)    {$s^\dagger \smash{\bullet F_{i,j}^\dagger}$};
+    \node[boxmode]   (z)        at (6,-.7)    {$F_{i,j}$};
+    \node[invisible] (target)   at (8,-.7)    {};
 
     \path (source.north east) edge [above] node {} (y.north west);
     \path (x.north east) edge [above] node {} (y.south west);
@@ -604,18 +604,18 @@ Graphically, we can now represent a single branch of the measurement as follows:
 \end{tikzpicture} \end{center}
 But using the compositionality property from \Figure{names}, this is equivalent to
 \begin{center} \begin{tikzpicture}
-    \node[boxmode] (y) at (2,0) {$s^\dagger \bullet \beta_{i,j}^\dagger$};
+    \node[boxmode] (y) at (2,0) {$s^\dagger \bullet F_{i,j}^\dagger$};
     \node[boxmode] (x) at (4,0) {$s \bullet \id_\Qubit$};
-    \node[boxmode] (z) at (6,0) {$\beta_{i,j}$};
+    \node[boxmode] (z) at (6,0) {$F_{i,j}$};
     \path (0,0) edge [above] node {} (y);
     \path (y)   edge [above] node {} (x);
     \path (x)   edge [above] node {} (z);
     \path (z)   edge [above] node {} (8,0);
 \end{tikzpicture} \end{center}
-Because $\beta_{i,j}$ is unitary, their composition is
+Because $F_{i,j}$ is unitary, their composition is
 \begin{align*}
-    \beta_{i,j} \circ s \bullet \id_\Qubit \circ s^\dagger \bullet \beta_{i,j}^\dagger 
-    &= s^\dagger s \bullet(\beta_{i,j} \circ \id_\Qubit \circ \beta_{i,j}^\dagger) \\
+    F_{i,j} \circ s \bullet \id_\Qubit \circ s^\dagger \bullet F_{i,j}^\dagger 
+    &= s^\dagger s \bullet(F_{i,j} \circ \id_\Qubit \circ F_{i,j}^\dagger) \\
     &= s^\dagger s \bullet \id_\Qubit
 \end{align*}
 By definition,

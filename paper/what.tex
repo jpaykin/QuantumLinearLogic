@@ -1,14 +1,19 @@
-From quantum mechanics, we learn that the world is defined by Hilbert spaces
-that evolve according to unitary transformations.\citeme{find something}
-
-\jp{Basics of linear algebra eg linear transforamtions as matrices?}
+The behavior of quantum mechanics is described by Hilbert spaces, which
+evolve via unitary transformations. In this section we will develop
+some of the quantum mechanical background necessary to understand the quantum
+teleportation algorithm. We expect the user to have some knowledge of vector spaces and
+linear transformations with respect to vectors and matrices. For further
+background on linear algebra, see \cite{gallier13}.
 
 \begin{definition}[Hilbert space]\label{def:hilbert-space}
-  \asz{This is a (slightly modified) quote from the Wikipedia article on Hilbert
-  spaces; we need something better.}  ``A \term{Hilbert space} $H$ is a complex
-  inner product space that is also a complete metric space with respect to the
-  distance function induced by the inner product.''
+  A \term{Hilbert space} is a complex vector space equipped with an inner product
+  $\braket{\varphi | psi}$
+  such that the distance function induced by the inner product is a complete
+  metric space.
 \end{definition}
+
+In this section we will only be considering spaces of the form $\C^m$.
+In this context, matrices fully generalize linear transformations.
 
 \begin{definition}[Conjugate transpose]\label{def:conjugate-transpose}
   The \term{conjugate transpose} of a matrix $M = (M_{i,j}) \in \C^{m \cross
@@ -22,25 +27,27 @@ that evolve according to unitary transformations.\citeme{find something}
 
 \begin{definition}[Unitary matrix]\label{def:unitary-matrix}
   A \term{unitary matrix} is a square matrix $U \in \C^{n \cross n}$ such that
-  $U^\dag U = I$.\asz{Wikipedia defines a unitary \emph{transformation} as an
-  isomorphism of Hilbert spaces, or a linear transformation that preserves the
-  inner product.  Should we mention this?}
+  $U^\dag U = I$. 
 \end{definition}
+A property of unitary matrices is that they preserve the inner product:
+\[
+    \braket{U \varphi | U \psi} = \braket{\varphi | \psi}.
+\]
 
 We also need to briefly touch on notation.  We adopt the physicists' convention
 of writing $\ket{\psi}$ for an element of a Hilbert space $H$; this is referred
-to as a \term{ket}.  The dual of a ket is a \term{bra}, written $\bra{\phi}$,
-which is an element of $H$'s dual space.  When working with vectors in $\C^n$,
-as we will be doing, we can define $\bra{\psi} = \ket{\psi}^\dag$: where kets
-are column vectors, bras are row vectors.  The notation $\braket{\phi | \psi}$
-then denotes the inner product of $\ket{\phi}$ and $\ket{\psi}$, which is just
-matrix multiplication in the case of $\C^n$.  Importantly, this means that we
+to as a \term{ket}. In $\C^n$, a ket is a column vector.
+The dual of a ket is a \term{bra}, written $\bra{\phi}$,
+which is a corresponding row vector; in fact we can define $\bra{\psi} = \ket{\psi}^\dag$.
+The inner product of two column vectors, then, is exactly
+\[ \braket{\phi | \psi} = \bra{\phi} \mtimes \ket{\psi} = \ket{\phi}^\dag \ket{\psi} \]
+where $\mtimes$ corresponds to matrix multiplication. Importantly, this means that we
 have now also adopted the physicist's convention that the inner product is
 linear in its \emph{second} argument, and conjugate-linear in its \emph{first}.
 
-Fortunately, for quantum computation, we are only interested in very particular
-Hilbert spaces.  These are the spaces that arise from considering the single
-fundamental primitive datum of quantum computation: the \term{qubit}.  A qubit
+For quantum computation, we are only interested in very particular
+Hilbert spaces---the spaces that arise from considering the \term{qubit}, the single
+primitive datum of quantum computation.  A qubit
 is a \emph{qu}antum \emph{b}it: when we have a Newtonian\footnotemark{} bit, we
 know that it is either $0$ or $1$; similarly, when we measure a qubit, we know
 that we will get either $\ket{0}$ or $\ket{1}$.  The difference between a qubit
@@ -48,18 +55,15 @@ and a bit lies in the word ``measure'': as long as we \emph{don't} measure a
 qubit, it can take on all sorts of crazy states.  Formally, we can represent a
 qubit as an element of $\C^2$ subject to some normalization constraints.
 
-\jp{Choice: complex numbers represented as $a$ or $\alpha$?}\asz{Either $a$
-  \emph{or} the name of the qubit subscripted with the index -- at least, that's
-what I've been doing in this section.}
 \begin{definition}[Qubit]\label{def:qubit}
-  A \term{qubit} is a vector of two complex numbers \[ \vector{a b} \in \C^2 \]
-  such that $|a|^2 + |b|^2 = 1$.  In general, we say that two qubits are the
+  A \term{qubit} is a vector of two complex numbers \[ \vector{\alpha \beta} \in \C^2 \]
+  such that $|\alpha|^2 + |\beta|^2 = 1$.  In general, we say that two qubits are the
   same if they differ only by a constant factor (even if one is non-normalized).
   We define $\ket{0}$ and $\ket{1}$ to be the basis vectors \[ \ket{0} =
   \vector{1 0} \text{ and } \ket{1} = \vector{0 1}, \] and will thus often write
-  the above qubit as $a\ket{0} + b\ket{1}$.  The general, non-basis, qubit
-  states, where $a \ne 0$ and $b \ne 0$, are termed \term{superpositions}.  We
-  call the coefficients $a$ and $b$ \term{probability amplitudes}, for reasons
+  the above qubit as $\alpha\ket{0} + \beta\ket{1}$.  The general, non-basis, qubit
+  states, where $\alpha \ne 0$ and $\beta \ne 0$, are termed \term{superpositions}.  We
+  call the coefficients $\alpha$ and $\beta$ \term{probability amplitudes}, for reasons
   which will become clear later.
 \end{definition}
 
@@ -81,26 +85,40 @@ bitwise negation, which we define as \[
 \] Seeing that $X$ is unitary is straightforward, since it is both self-inverse
 and Hermitian.  It is also easy to see that $X\ket{0} = \ket{1}$ and $X\ket{1} =
 \ket{0}$, justifying the name bitwise negation.  But qubits are more than just
-zeroes and ones.  If we apply bitwise negation to an arbitrary qubit $a\ket{0} +
-b\ket{1}$, we get \[
-  X(a\ket{0} + b\ket{1}) =
+zeroes and ones.  If we apply bitwise negation to an arbitrary qubit $\alpha\ket{0} +
+\beta\ket{1}$, we get \[
+  X(\alpha\ket{0} + \beta\ket{1}) =
   \begin{pmatrix}
     0 & 1 \\
     1 & 0
   \end{pmatrix}
-  \vector{a b} =
-  \vector{b a} =
-  b\ket{0} + a\ket{1}.
+  \vector{\alpha \beta} =
+  \vector{\beta \alpha} =
+  \beta\ket{0} + \alpha\ket{1}.
 \]  Thus, bitwise negation swaps the probability amplitudes of an arbitrary
 qubit.
 
 \begin{figure}
+\centering
+\begin{subfigure}{.4\textwidth}
   \centerline{\Qcircuit{
     \lstick{\ket{0}} & \gate{X} & \rstick{\ket{1}} \qw
   }}
-  \caption{The quantum circuit diagram for applying the bitwise not operator to
-    a single qubit; here, it is applied to the initial state $\ket{0}$.}
+  \caption{Bitwise not operator applied to the single qubit $\ket{0}$.}
   \label{qcd:bitwise-not-0}
+\end{subfigure}
+\qquad
+\begin{subfigure}{.4\textwidth}
+  \centerline{\Qcircuit{
+    \lstick{\ket{0}} &
+    \gate{H} &
+    \rstick{\displaystyle\frac{\ket{0}+\ket{1}}{\sqrt{2}}} \qw
+  }}
+  \caption{Hadamard transform applied to the single qubit $\ket{0}$.}
+  \label{qcd:hadamard-0}
+\end{subfigure}
+\caption{Basic quantum circuit diagrams.}
+\label{qcd:example-diag}
 \end{figure}
 
 Despite this ability to apply bitwise negation to non-basis vectors, it is still
@@ -130,23 +148,13 @@ into evenly-weighted superpositions of $\ket{0}$ and $\ket{1}$:
 In the general case, we have \[
   H(a\ket{0} + b\ket{1})
   = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & \pos1 \\ 1 & -1 \end{pmatrix}
-    \vector{a b}
-  = \vector{a+b a-b}
-  = \frac{(a+b)\ket{0} + (a-b)\ket{1}}{\sqrt{2}},
+    \vector{\alpha \beta}
+  = \vector{\alpha+\beta \alpha-\beta}
+  = \frac{(\alpha+\beta)\ket{0} + (\alpha-\beta)\ket{1}}{\sqrt{2}},
 \]
 so the Hadamard transform distributes the probability amplitudes of an arbitrary
 qubit across both of its basis components.
 
-\begin{figure}
-  \centerline{\Qcircuit{
-    \lstick{\ket{0}} &
-    \gate{H} &
-    \rstick{\displaystyle\frac{\ket{0}+\ket{1}}{\sqrt{2}}} \qw
-  }}
-  \caption{The quantum circuit diagram for applying the Hadamard transform to a
-    single qubit; here, it is applied to the initial state $\ket{0}$.}
-  \label{qcd:hadamard-0}
-\end{figure}
 
 We can also represent applying unitary transformations diagrammatically through
 the use of a \term{quantum circuit diagram}, such as we see in
@@ -179,17 +187,10 @@ all, vector spaces are closed under the Cartesian product.
 
 But here, too, quantum mechanics departs from our intuitions.  In quantum
 mechanics, when we combine two state spaces, we take their \emph{tensor} product
-instead.  For a fully formal definition of the tensor product \asz{Because \emph{I}
-certainly can't define it.} \jp{I can, should I?}, consult your favorite textbook on linear algebra,
-such as \cite{gallier13}; however, we define the relevant operations for the
-finite-dimensional vector spaces that we care about.
-
- 
-A few properties of this tensor
-product are:
+instead.  For a fully formal definition of the tensor product
+consult \cite{gallier13}; we will give some of the relevant operations for the
+finite-dimensional vector spaces here:
 \begin{enumerate}
-    \item If $B_1$ is a basis of $H_1$ and $B_2$ is a basis of $H_2$
-    then $B_1 \times B_2$ is a basis for $H_1 \tensor H_2$.
     \item For arbitrary $u_1 \in H_1$ and $u_2 \in H_2$, 
     $u_1 \tensor u_2$ is the equivalence class in $H_1 \tensor H_2$ induced
     by bilinearity:
@@ -199,6 +200,8 @@ product are:
         (u_1 \tensor v) + (u_2 \tensor v) &= (u_1 + u_2) \tensor v \\
         (u \tensor v_1) + (u \tensor v_2) &= u \tensor (v_1 + v_2)
     \end{align*}
+    \item If $B_1$ is a basis of $H_1$ and $B_2$ is a basis of $H_2$
+    then $B_1 \times B_2$ is a basis for $H_1 \tensor H_2$.
 \end{enumerate}
 
 \begin{definition}[Tensor product]\label{def:tensor-product}
@@ -208,13 +211,13 @@ product are:
   $\ket{\phi}$ and the entries in $\ket{\psi}$.  More precisely, we have \[
     \ket{\phi} \tensor \ket{\psi} =
     \vector{\phi_0\ket{\psi} \phi_1\ket{\psi} \vdots{} \phi_{m-1}\ket{\psi}} =
-    \vector{\phi_0\psi_0 \phi_0\psi_1 \vdots{} \phi_0\psi_{n-1}
-            \phi_1\psi_0 \phi_1\psi_1 \vdots{} \phi_1\psi_{n-1}
+    \vector{\phi_0\psi_0 \vdots{} \phi_0\psi_{n-1}
+            \phi_1\psi_0 \vdots{} \phi_1\psi_{n-1}
             \vdots{}
-            \phi_{m-1}\psi_0 \phi_{m-1}\psi_1 \vdots{} \phi_{m-1}\psi_{n-1}}
+            \phi_{m-1}\psi_0 \vdots{} \phi_{m-1}\psi_{n-1}}
     \in \C^{mn}.
-  \]  We also write this as $\ket{\phi}\ket{\psi}$ or $\ket{\phi\psi}$ if there
-  will be no ambiguity.
+  \]  We will also write this as $\ket{\phi}\ket{\psi}$ or $\ket{\phi\psi}$ if there
+  is no ambiguity.
  
 
   % "Internal" to the submatrix -- spacing is hard to come by here.
@@ -225,107 +228,52 @@ product are:
   respectively, is the $mp \cross nq$ matrix whose entries are the pairwise
   products of the entries in $U$ and the entries in $V$.  More precisely, we
   have 
-  %% \begin{gather*}
-  %%   U \tensor V =
-  %%   \begin{pmatrix}
-  %%     u_{11}V & u_{21}V & \cdots & u_{m1}V \\
-  %%     u_{12}V & u_{22}V & \cdots & u_{m2}V \\
-  %%     \vdots & \vdots & \ddots & \vdots \\
-  %%     u_{1n}V & u_{2n}V & \cdots & u_{mn}V
-  %%   \end{pmatrix} \\ =
-  %%   \left(\begin{array}{@{}*{2}{c@{\;\;}ccc}cc@{\;\;}ccc@{}}
-  %%     u_{11}v_{11} & u_{11}v_{21} & \icdots & u_{11}v_{p1} &
-  %%     u_{21}v_{11} & u_{21}v_{21} & \icdots & u_{21}v_{p1} &
-  %%     \cdots &
-  %%     u_{m1}v_{11} & u_{m1}v_{21} & \icdots & u_{m1}v_{p1}
-  %%     \\
-  %%     u_{11}v_{12} & u_{11}v_{22} & \icdots & u_{11}v_{p2} &
-  %%     u_{21}v_{12} & u_{21}v_{22} & \icdots & u_{21}v_{p2} &
-  %%     \cdots &
-  %%     u_{m1}v_{12} & u_{m1}v_{22} & \icdots & u_{m1}v_{p2}
-  %%     \\
-  %%     \vdots & \vdots & \iddots & \vdots &
-  %%     \vdots & \vdots & \iddots & \vdots &
-  %%     \cdots &
-  %%     \vdots & \vdots & \iddots & \vdots
-  %%     \\
-  %%     u_{11}v_{1q} & u_{11}v_{2q} & \icdots & u_{11}v_{pq} &
-  %%     u_{21}v_{1q} & u_{21}v_{2q} & \icdots & u_{21}v_{pq} &
-  %%     \cdots &
-  %%     u_{m1}v_{1q} & u_{m1}v_{2q} & \icdots & u_{m1}v_{pq}
-  %%     \\
-  %%     \vdots & \vdots & \vdots & \vdots &
-  %%     \vdots & \vdots & \vdots & \vdots &
-  %%     \ddots &
-  %%     \vdots & \vdots & \vdots & \vdots
-  %%     \\
-  %%     u_{1n}v_{11} & u_{1n}v_{21} & \icdots & u_{1n}v_{p1} &
-  %%     u_{2n}v_{11} & u_{2n}v_{21} & \icdots & u_{2n}v_{p1} &
-  %%     \cdots &
-  %%     u_{mn}v_{11} & u_{mn}v_{21} & \icdots & u_{mn}v_{p1}
-  %%     \\
-  %%     u_{1n}v_{12} & u_{1n}v_{22} & \icdots & u_{1n}v_{p2} &
-  %%     u_{2n}v_{12} & u_{2n}v_{22} & \icdots & u_{2n}v_{p2} &
-  %%     \cdots &
-  %%     u_{mn}v_{12} & u_{mn}v_{22} & \icdots & u_{mn}v_{p2}
-  %%     \\
-  %%     \vdots & \vdots & \iddots & \vdots &
-  %%     \vdots & \vdots & \iddots & \vdots &
-  %%     \cdots &
-  %%     \vdots & \vdots & \iddots & \vdots
-  %%     \\
-  %%     u_{1n}v_{1q} & u_{1n}v_{2q} & \icdots & u_{1n}v_{pq} &
-  %%     u_{2n}v_{1q} & u_{2n}v_{2q} & \icdots & u_{2n}v_{pq} &
-  %%     \cdots &
-  %%     u_{mn}v_{1q} & u_{mn}v_{2q} & \icdots & u_{mn}v_{pq}
-  %%   \end{array}\right) \\ \in \C^{mp \cross nq} % Add back in if there's space
-  %% \end{gather*}
-  %%
   \begin{gather*}
     U \tensor V =
     \begin{pmatrix}
-      u_{11}V & u_{21}V & \cdots & u_{m1}V \\
-      u_{12}V & u_{22}V & \cdots & u_{m2}V \\
+      u_{00}V & u_{10}V & \cdots & u_{m'0}V \\
+      u_{01}V & u_{11}V & \cdots & u_{m'1}V \\
       \vdots & \vdots & \ddots & \vdots \\
-      u_{1n}V & u_{2n}V & \cdots & u_{mn}V
+      u_{0n'}V & u_{1n'}V & \cdots & u_{m'n'}V
     \end{pmatrix} \\ =
     \left(\begin{array}{@{}*{2}{c@{\;\;}ccc}cc@{\;\;}ccc@{}}
-      u_{11}v_{11} & \icdots & u_{11}v_{p1} &
-      u_{21}v_{11} & \icdots & u_{21}v_{p1} &
+      u_{00}v_{00} & \icdots & u_{00}v_{p'0} &
+      u_{10}v_{00} & \icdots & u_{10}v_{p'0} &
       \cdots &
-      u_{m1}v_{11} & \icdots & u_{m1}v_{p1}
+      u_{m'0}v_{00} & \icdots & u_{m'0}v_{p'0}
       \\
       \vdots & \iddots & \vdots &
       \vdots & \iddots & \vdots &
       \cdots &
       \vdots & \iddots & \vdots
       \\
-      u_{11}v_{1q} & \icdots & u_{11}v_{pq} &
-      u_{21}v_{1q} & \icdots & u_{21}v_{pq} &
+      u_{00}v_{0q'} & \icdots & u_{00}v_{p'q'} &
+      u_{10}v_{0q'} & \icdots & u_{10}v_{p'q'} &
       \cdots &
-      u_{m1}v_{1q} & \icdots & u_{m1}v_{pq}
+      u_{m'0}v_{0q'} & \icdots & u_{m'0}v_{p'q'}
       \\
       \vdots & \vdots & \vdots &
       \vdots & \vdots & \vdots &
       \ddots &
       \vdots & \vdots & \vdots
       \\
-      u_{1n}v_{11} & \icdots & u_{1n}v_{p1} &
-      u_{2n}v_{11} & \icdots & u_{2n}v_{p1} &
+      u_{0n'}v_{00} & \icdots & u_{0n'}v_{p'0} &
+      u_{1n'}v_{00} & \icdots & u_{1n'}v_{p'0} &
       \cdots &
-      u_{mn}v_{11} & \icdots & u_{mn}v_{p1}
+      u_{m'n'}v_{00} & \icdots & u_{m'n'}v_{p'0}
       \\
       \vdots & \iddots & \vdots &
       \vdots & \iddots & \vdots &
       \cdots &
       \vdots & \iddots & \vdots
       \\
-      u_{1n}v_{1q} & \icdots & u_{1n}v_{pq} &
-      u_{2n}v_{1q} & \icdots & u_{2n}v_{pq} &
+      u_{0n'}v_{0q'} & \icdots & u_{0n'}v_{p'q'} &
+      u_{1n'}v_{0q'} & \icdots & u_{1n'}v_{p'q'} &
       \cdots &
-      u_{mn}v_{1q} & \icdots & u_{mn}v_{pq}
+      u_{m'n'}v_{0q'} & \icdots & u_{m'n'}v_{p'q'}
     \end{array}\right).% \\ \in \C^{mp \cross nq} % Add back in if there's space
   \end{gather*}
+  where $m'=m-1$, $n'=n-1$, $p'=p-1$ and $q'=q-1$.
 
   \footnotetext{Solely for space reasons.}
 \end{definition}
@@ -352,20 +300,22 @@ basis vector is the one containing $0$s everywhere except for a $1$ at
 
 Now that we can consider multi-qubit states, we can revisit the no-cloning
 theorem mentioned in \cref{sec:why}.  The no-cloning theorem says there is no
-way to produce two copies of a single arbitrary quantum state.  \citeme{WZD}
+way to produce two copies of a single arbitrary quantum state.
 With tensor products, we can state and prove this theorem formally.
 
-\begin{theorem}[No-Cloning \citeme{WZD}]\label{thm:no-cloning}
-  There is no unitary transformation which duplicates an arbitrary qubit; that
+\begin{theorem}[No-Cloning \citep{wootters1982single,dieks1982communication}]\label{thm:no-cloning}
+  There is no unitary transformation that duplicates an arbitrary qubit; that
   is, there does not exist a unitary matrix $U \in \C^{2 \cross 2}$ such that \[
   U(\ket{0}\tensor\ket{\psi}) = \ket{\psi}\tensor\ket{\psi}.\]
 \end{theorem}
 \begin{proof}
-  Suppose there were a unitary transformation $U$ that duplicated qubits.
-  Consider an arbitrary qubit $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$.  By
-  our assumption, we know that \[ U(\ket{0} \tensor \ket{\psi}) = \ket{\psi}
-  \tensor \ket{\psi},
-  \] which expands out to \[
+  Suppose there was such a transformation.
+  Consider an arbitrary qubit $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$. 
+  By the duplication property of $U$, we know that
+  \[ U(\ket{0} \tensor \ket{\psi}) = \ket{\psi} \tensor \ket{\psi},
+  \] 
+  which expands out to 
+  \[
       U(\ket{0} \tensor \ket{\psi})
     = (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1})
     = \alpha^2    \ket{00}
@@ -392,14 +342,21 @@ With tensor products, we can state and prove this theorem formally.
   transformation are $\pm\ket{0}$ and $\pm\ket{1}$.
 \end{proof}
 
-The tensor product has another important property besides allowing us to state
-and prove the no-cloning theorem and increasing the dimension of the vector
-spaces involved multiplicatively instead of additively.  We know that given
-vector spaces $U$ and $V$, all elements of $U \cross V$ are of the form $(u,v)$
-for some $u \in U$ and $v \in V$.  But when we take the tensor product of $U$
-and $V$ instead, we find that there exist elements of $U \tensor V$ that aren't
-of the form $u \tensor v$ for any $u \in U$ and $v \in V$.  We call states of
-the form $u \tensor v$ \term{separable}, and all other states \term{entangled}.
+There is another way to see that $U$ does not exist for arbitrary qubits. In the
+first expansion of $U(\ket{0} \tensor \ket{\psi})$, we can factor the state into two
+1-qubit states:
+\[ (\alpha\ket{0} + \beta\ket{1}) \tensor (\alpha\ket{0} + \beta\ket{1}). \]
+However it is impossible to perform such a factorization for the second expansion,
+$\alpha\ket{00} + \beta\ket{11}$.
+
+%% The tensor product has another important property besides allowing us to state
+%% and prove the no-cloning theorem and increasing the dimension of the vector
+%% spaces involved multiplicatively instead of additively.  We know that given
+%% vector spaces $U$ and $V$, all elements of $U \cross V$ are of the form $(u,v)$
+%% for some $u \in U$ and $v \in V$.  But when we take the tensor product of $U$
+%% and $V$ instead, we find that there exist elements of $U \tensor V$ that aren't
+%% of the form $u \tensor v$ for any $u \in U$ and $v \in V$.  We call states of
+%% the form $u \tensor v$ \term{separable}, and all other states \term{entangled}.
 
 \begin{definition}[Separable and entangled states]%
 \label{def:separable-entangled}
@@ -484,27 +441,16 @@ $\ket{1}$.  And indeed, when we work this out, we get the state $(\ket{00} +
   \frac{\ket{00} + \ket{11}}{\sqrt{2}}.
 \end{align*}
 And this state's correlation -- guaranteeing that both qubits must be the same,
-but \emph{not} what value they must take -- means that it is entangled.  To see
-this, suppose we had some separable two-qubit state composed of $\ket{\phi} =
-\phi_0\ket{0} + \phi_1\ket{1}$ and $\ket{\psi} = \psi_0\ket{0} + \psi_1\ket{1}$;
-this is of the form \[ \ket{\phi\psi} = \phi_0\psi_0\ket{00} +
-\phi_0\psi_1\ket{01} + \phi_1\psi_0\ket{10} + \phi_1\psi_1\ket{11}. \]  Thus,
-the state above is separable if and only if we have the equality \[
-\frac{\ket{00} + \ket{11}}{\sqrt{2}} = \phi_0\psi_0\ket{00} +
-\phi_0\psi_1\ket{01} + \phi_1\psi_0\ket{10} + \phi_1\psi_1\ket{11}, \] which
-splits up into \[ \phi_0\psi_0 = \phi_1\psi_1 = \frac{1}{\sqrt{2}}
-\quad\text{and}\quad \phi_0\psi_1 = \phi_1\psi_0 = 0. \]  The two equalities
-with $1/\sqrt{2}$ tell us that none of the $\phi_i$ or $\psi_i$ are $0$;
-however, the two equalities with $0$ require that at least two of them are.
-This is impossible, and so $(\ket{00} + \ket{11})/2$ is entangled.
+but \emph{not} what value they must take -- means that it is entangled.  
+
 
 \begin{figure}
   \centerline{\Qcircuit{
-    \lstick{\ket{0}} & \ctrl{1} & \rstick{\ket{0}} \qw \\
-    \lstick{\ket{0}} & \targ    & \rstick{\ket{0}} \qw \\
+    \lstick{\ket{1}} & \ctrl{1} & \rstick{\ket{1}} \qw \\
+    \lstick{\ket{0}} & \targ    & \rstick{\ket{1}} \qw \\
   }}
   \caption{The quantum circuit diagram for applying the controlled not gate to
-    two qubits; here, it is applied to the initial state $\ket{00}$.}
+    two qubits; here, it is applied to the initial state $\ket{10}$.}
   \label{qcd:cnot-00}
 \end{figure}
 
@@ -629,12 +575,15 @@ measurements are \emph{probabilistic}.
                + \cdots
                + \psi_{1\cdots1}\ket{1\cdots1},
   \] the result is one of the basis vectors; the probability that the result is
-  the basis vector $\ket{\vec{B}}$ is $|\psi_{\vec{B}}|^2$ for all $\vec{B} \in
+  the basis vector $\ket{\vec{B}}$ is $|\psi_{\vec{b}}|^2$ for all $\vec{b} \in
   \Z_2^n$.
 \end{definition}
 
-Since we know that $|\psi_0|^2 + |\psi_1|^2 = 1$ by \cref{def:qubit}, these are
-the only two options for a one-qubit state.  This also justifies the name
+For a single qubit state, $\psi_0\ket{0} + \psi_1\ket{1}$ results in $\ket{0}$
+with probability $|\psi_0|^2$ and $\ket{1}$ with probability $|\psi_1|^2$. 
+Because $|\psi_0|^2 + |\psi_1|^2 = 1$ by \cref{def:qubit}, the probability
+space for this measurement is just $\ket{0}$ or $\ket{1}$.
+This also justifies the name
 ``probability amplitudes'' for $\psi_0$ and $\psi_1$.  It is easy to check that
 the tensor product preserves the property that the sum of the squares of the
 norms of all the coefficients sum to one, so this generalizes to multi-qubit
@@ -722,7 +671,7 @@ wire as Alice and the bottom wire as Bob (and imagining a rocket ship after the
 controlled not gate).  This circuit has a couple of interesting properties.
 First, we see that Bob's qubit does not get notated with a Newtonian wire.  Bob
 cannot know that Alice has measured her qubit, so he doesn't know that his qubit
-is in the basis state $\ket{c}$ until he measures it.  Second, measuring Alice's
+is in the basis state $\ket{b}$ until he measures it.  Second, measuring Alice's
 qubit changes Bob's qubit.  This makes sense: prior to the measurement, the
 qubits were in the state $(\ket{00} + \ket{11})/\sqrt{2}$.  If Alice measures
 her qubit to be $\ket{0}$, then the only possibility that remains for Bob's
@@ -731,40 +680,17 @@ this notion formal, we must give an account of how measuring \emph{part} of an
 entangled state works.
 
 \begin{definition}[Partial measurement]\label{def:partial-measurement}
-  To \term{measure} the $i$th (zero-indexed) qubit in an $n$-qubit state \[
-    \ket{\psi} = \psi_{0\cdots0}\ket{0\cdots0}
-               + \psi_{0\cdots1}\ket{0\cdots1}
-               + \cdots
-               + \psi_{1\cdots1}\ket{1\cdots1},
-  \] we first write the basis vectors as $\ket{\vec{B}}$ for each \[
-    \vec{B} = \vector{b_0 b_1 \vdots{} b_{n-1}} \in \Z_2^n,
-  \] and so write the whole state as \[
-    \ket{\psi} = \sum_{\vec{B} \in \Z_2^n} \psi_{\vec{B}}\ket{\vec{B}}.
-  \]  We can split each $\vec{B}$ into three parts: \[
-    \vec{B}_L = \vector{b_0 \vdots{} b_{i-1}} \in \Z_2^i,\
-    b_i \in \Z_2,\text{ and }
-    \vec{B}_R = \vector{b_{i+1} \vdots{} b_{n-1}} \in \Z_2^{n-i-1};
-  \] we write $\Z_2^n \downarrow i$ for the set $\Z_2^i \cross \Z_2^{n-i-1}$.
-  We can then define the states \[
-    \ket{\psi_b} = \sum_{(\vec{B}_L,\vec{B}_R) \in \Z_2^n \downarrow i}
-                     \psi_{\vec{B}_L,b,\vec{B}_R}
-                     \ket{\vec{B}_L,b,\vec{B}_R}
-  \] for $b \in \Z_2$, and rewrite the whole state as $\ket{\psi} = \ket{\psi_0}
-  + \ket{\psi_1}$.  Measurement then effectively puts us in either the state
-  $\ket{\psi_0}$ or $\ket{\psi_1}$, up to normalization.  Let \[
-    p_b = \sum_{(\vec{B}_L,\vec{B}_R) \in \Z_2^n \downarrow i}
-           |\psi_{\vec{B}_L,b,\vec{B}_R}|^2
-  \] be the sum of the probabilities of all cases in which $b_i$ is measured to
-  be $b$; then \[ \ket{\psi'_b} = \frac{\ket{\psi_b}}{\sqrt{p_b}} \] is the
-  renormalized version of $\ket{\psi_b}$, and we end up in state $\ket{\psi'_b}$
-  with probability $p_b$.
-  
-  To measure multiple qubits, this process is simply repeated recursively.
+Any $n$-qubit state can be written as
+\[
+    \alpha \ket{0} \ket{\phi}
+    + \beta \ket{1} \ket{\psi}
+\]
+where $|\alpha|^2 + |\beta|^2 = 1$ and $\ket{\phi}$ and $\ket{\psi}$ are both $(n-1)$-qubit states.
+Then the result of measuring the first qubit is the state
+$\ket{0} \ket{\phi}$ with probability $|\alpha|^2$ and
+$\ket{1} \ket{\psi}$ with probability $|\beta|^2$.
 \end{definition}
 
 Again, the intuitive meaning of this is clear: the probability that qubit $i$ is
 $\ket{0}$ is just the sum of the probabilities that we end up in any of the
-states where this is true, and measurement discards all the other cases.  To
-preserve normalization, the probability mass that was discarded is evenly
-applied to all remaining states, so that the relative probabilities do not
-change.
+states where this is true, and measurement discards all the other cases.  
