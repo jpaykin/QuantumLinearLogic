@@ -6,7 +6,7 @@ the language of quantum mechanics with the language of programming.
 The approach we describe in this section is the work of \cite{abramsky2009categorical},
 which axiomatizes the major properties of quantum mechanics and logic as a categorical model.
 In this section we will provide an overview of their theory and use it to describe the
-teleportation algorithm given in \Section{where}.
+teleportation algorithm given in \cref{sec:where}.
 
 Category theory is a powerful tool for describing the algebraic structure of
 various mathematical constructions. It allows for the axiomatic description
@@ -219,7 +219,7 @@ In the case of $\eta$ and $\varepsilon$, we have
 \[ \eta_A = \lift{\id_A} \qquad\text{and}\qquad \varepsilon_A = \llower{\id_A}. \]
 
 From the commutativity of the unit and counit, we can then induce certain properties of the
-$\lift{-}$ and $\llower{-}$ operations, for example those in \Figure{names}.
+$\lift{-}$ and $\llower{-}$ operations, for example those in \cref{fig:names}.
 
 \begin{figure}
 \begin{tabular}{ccc}
@@ -462,7 +462,7 @@ spacially together. By applying associativity we model spacial separation:
     \xrightarrow{\alpha_{\Qubit,\Qubit,\Qubit}}
     (\Qubit \tensor \Qubit^*) \tensor \Qubit
 \]
-The next step is a kind of entanglement, which we saw in \Section{where} is the 
+The next step is a kind of entanglement, which we saw in \cref{sec:where} is the 
 conjugate-transpose of the first. We represent this step as a unary morphism $U$, where 
 $U = (H \tensor \id_\Qubit) \circ \CNOT$. In the teleportation algorithm, this becomes
 \[
@@ -602,7 +602,7 @@ Graphically, we can now represent a single branch of the measurement as follows:
     \path (x.south east) edge [above] node {} (z.west);
     \path (z.east) edge [above] node {} (target.west);
 \end{tikzpicture} \end{center}
-But using the compositionality property from \Figure{names}, this is equivalent to
+But using the compositionality property from \cref{fig:names}, this is equivalent to
 \begin{center} \begin{tikzpicture}
     \node[boxmode] (y) at (2,0) {$s^\dagger \bullet F_{i,j}^\dagger$};
     \node[boxmode] (x) at (4,0) {$s \bullet \id_\Qubit$};
