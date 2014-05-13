@@ -8,9 +8,7 @@ Newtonian mechanics limited by chaotic behavior.  All is, eventually, knowable.
 \footnotetext{Along with general relativity, but reconciling quantum mechanics
   with general relatively is beyond the scope of this paper.}
 
-Quantum mechanics takes this dream and shreds it to pieces. \jp{A little much??}
-
-Quantum mechanics tells us that we live in a world that is fundamentally
+Quantum mechanics tells us that the world that we live in is fundamentally
 \emph{stochastic}.  What we see when we measure is intrinsically random, and
 there is no fact of the matter about the situation before we do.\footnotemark{}
 This alone would be enough to wake us up from the Newtonian dream, but quantum
@@ -27,13 +25,11 @@ separated they become!
 Physics has recovered from this shock, and indeed has taken ahold of quantum
 mechanics with gusto.  Sadly, computer science (and, it must be admitted, daily
 life) has mostly ignored this tremendous awakening, preferring instead to
-pretend that actions always have the same consequences, and that cause must
-always precede effect.\jp{QM doesn't violate causality...}  
-But there is a growing research community studying
-\term{quantum computation}: the design of computational models that take advantage
-of the way the world \emph{really} works.  \citeme{so many} \jp{That's a bit of a strong
-statement given our imcomplete knowledge of physics, isn't it? Maybe, a better reflection
-of physical reality?}
+pretend that actions always have the same consequences, and
+computation is predicatable.  
+But as we will see in \cref{sec:when}, there is a growing research community studying
+\term{quantum computation}: the design of computational models that better reflect
+physical reality.
 
 And take advantage they do: it turns out that quantum computation is in many ways more
 powerful than the Newtonian computation we know and love.  While quantum
@@ -47,14 +43,13 @@ scientists have already done.  The \term{no-cloning theorem} is a fundamental
 result in quantum mechanics, due to \cite{wootters1982single} and
 \cite{dieks1982communication} (independently), that says no operation can
 duplicate an arbitrary quantum state.  Dually, the \term{no-deleting} theorem,
-due to \citeme{who?}, says that quantum states cannot be discarded.  These
+due to \cite{pati2000impossibility}, says that quantum states cannot be discarded.  These
 constraints are strongly reminiscent of \term{linearity}.
 
 Linear logic is a logical formalism that rejects the traditional logical
 notions of weakening and contraction; linear propositions can be viewed as
 precious resources, which are consumed upon use and may not be discarded.
 Linear propositions, in other words, are always used exactly once in a proof.
-\citeme{so many}
 
 In this paper, we discuss quantum computation on its own terms, and then
 demonstrate how it relates to a categorical model whose internal language is
