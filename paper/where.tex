@@ -1,0 +1,274 @@
+Now that we have seen all these pieces, we can put them all together in the
+\term{quantum teleportation} algorithm, whose circuit diagram can be seen in
+\cref{qcd:teleportation}.  Although the no-cloning theorem
+(\cref{thm:no-cloning}) prevents us from copying arbitrary qubits, teleportation
+allows us to \emph{move} a qubit state; by using an auxiliary entangled pair of
+qubits, it does this without actually transmitting a qubit through space.  This
+circuit does duplicate two wires; however, those wires have Newtonian bits, and
+so behave according to traditional rules of computation.
+
+\begin{figure}
+  \centerline{\Qcircuit{
+    \lstick{%
+      \tikz[overlay]
+        \draw[decorate,decoration={brace, amplitude=1em}]
+        (0,-4.1em) -- (0,1em)
+        node[midway,left=1.25em] {Alice} ;%
+      \ket{\psi}}
+      & \qw      & \qw
+      & \qw
+      & \ctrl{1} & \gate{H}
+      & \multimeasureD{1}{\metersym} & \cw
+      & % This stuff is shifted left a little
+        *!<.5em,.025em>-=-<.5em,.2em>{\bullet} % Control
+        \cw
+        \ar @{=} @<-.5em> [dd] % Classical wire down 2 spaces
+    & \rstick{\ket{x}} \cw
+    \\
+    \lstick{\ket{0}}
+      & \gate{H} & \ctrl{1}
+      & \qw
+      & \targ    & \qw
+      & \ghost{\metersym} & \cw
+      & % This stuff is shifted right a little
+        *!<-.5em,.025em>-=-<.5em,.2em>{\bullet}
+        \cw
+        \ar @{=} @<.5em> [d]
+    & \rstick{\ket{y}} \cw
+    \\
+    \lstick{%
+      \tikz[overlay,baseline]
+        \node[left=-.25em] {\raisebox{2.3ex}{Bob\hspace{1.1em}$\big\{$}} ;%
+      \ket{0}}
+      & \qw      & \targ
+      & \qw
+      & \qw      & \qw
+      & \qw & \qw
+      & \gate{F_{x,y}}
+    & \rstick{\ket{\psi}} \qw
+    %
+    % Is this clearer?
+    % \gategroup{2}{2}{3}{3}{1em}{--}
+    % \gategroup{1}{5}{2}{6}{1em}{--}
+    % \gategroup{1}{7}{2}{7}{1em}{--}
+    % \gategroup{1}{9}{2}{9}{2em}{--}
+    % \gategroup{3}{9}{3}{9}{1em}{--}
+  }}
+  \caption{The quantum circuit diagram for quantum teleportation.}
+  \label{qcd:teleportation}
+\end{figure}
+
+The quantum teleportation algorithm for Alice to send a qubit state $\ket{\psi}
+= \psi_0\ket{0} + \psi_1\ket{1}$ to Bob proceeds in five steps.
+\begin{enumerate}
+\item \term{Initial entanglement.}  Alice and Bob meet up, and entangle two
+  qubits.  Alice then blasts off in a rocket with one of the two qubits, leaving
+  Bob behind with the other.
+\item \term{Message entanglement.}  Far away, Alice takes a qubit in state
+  $\ket{\psi}$ that she wishes to send to Bob, and entangles it (differently!)
+  with her other qubit.  Transitively, the message qubit is now entangled with
+  Bob's qubit.
+\item \term{Measurement.}  Alice measures her two qubits, obtaining two
+  Newtonian bits $x$ and $y$.  This puts Bob's qubit into a scrambled version of
+  $\ket{\psi}$; precisely how it is scrambled depends on what is measured.
+\item \term{Newtonian communication.}  Alice sends $x$ and $y$ to Bob via some
+  ordinary Newtonian means.
+\item \term{Fixing.}  Bob receives Alice's Newtonian transmission, and applies a
+  unitary matrix $F_{x,y}$ to his qubit to undo the scrambling.  His qubit is
+  now in the state $\ket{\psi}$.
+\end{enumerate}
+Initially, the state of the system is $\ket{\Psi_0} = \ket{\psi00}$; the
+teleportation algorithm transforms this into the state $\ket{\Psi_4} =
+\ket{xy\psi}$.  To understand how this happens, we break down the state of the
+system after each stage of the algorithm.
+
+\subsection{Initial entanglement}\label{sec:initial-entanglement}
+To start with, Alice and Bob meet up and, by applying a Hadamard and controlled
+not gate as in \cref{qcd:entangle-2-equal}, obtain a pair of qubits in the state
+$((\ket{00} + \ket{11})/\sqrt{2}$.  The matrix applied to these qubits is $E =
+\CNOT \mtimes (H \tensor I)$.  At this point, the whole system is in the
+state \[ \ket{\Psi_1} = \ket{\psi} \tensor \frac{\ket{00} + \ket{11}}{\sqrt{2}}
+= \frac{\ket{\psi00} + \ket{\psi11}}{\sqrt{2}}. \] Alice then blasts off with
+her qubits.
+
+\subsection{Message entanglement}\label{sec:message-entanglement}
+Alice wants to send $\ket{\psi}$ to Bob, so she applies the opposite of
+\cref{qcd:entangle-2-equal}: first a controlled not gate, and then a Hadamard
+gate, which is defined by the matrix $(H \tensor I) \mtimes \CNOT$.  Since
+$\CNOT$ and $H$ are both Hermitian, we know that $E^\dag = (\CNOT \mtimes (H
+\tensor I))^\dag = (H \tensor I)^\dag \mtimes \CNOT^\dag = (H \tensor I) \mtimes
+\CNOT$, and so this form of entanglement is simply $E^\dag$, the inverse of the
+first.  However, we are applying $E^\dag$ to different qubits than we applied
+$E$ to initially, so $E$'s effects are not undone.
+
+\asz{Oops, I don't use this.}%
+To understand the effects of $E^\dag$, it is easiest to look at the effects of
+$E$, and then read them backwards.  It is easy to verify that applying $E$ to
+the basis vectors produces states that are either perfectly correlated or
+perfectly anticorrelated: \[
+\begin{array}{c@{\qquad}c}
+  E\ket{00} = \dfrac{\ket{00} + \ket{11}}{\sqrt{2}} &
+  E\ket{01} = \dfrac{\ket{01} + \ket{10}}{\sqrt{2}} \\[4ex]
+  E\ket{10} = \dfrac{\ket{00} - \ket{11}}{\sqrt{2}} &
+  E\ket{11} = \dfrac{\ket{01} - \ket{10}}{\sqrt{2}}
+\end{array}
+\] This works because \[ H\ket{0} = \frac{\ket{0} + \ket{1}}{\sqrt{2}}
+\text{ and } H\ket{1} = \frac{\ket{0} - \ket{1}}{\sqrt{2}}, \] and then the
+$\CNOT$ flips the second bit only when the first bit is zero.
+
+Consequently, the behavior of $E^\dag$ must be to invert this, and so transform
+entangled superpositions into ordinary basis states: \[
+\begin{array}{c@{\qquad}c}
+  E^\dag \dfrac{\ket{00} + \ket{11}}{\sqrt{2}} = \ket{00} &
+  E^\dag \dfrac{\ket{01} + \ket{10}}{\sqrt{2}} = \ket{01} \\[4ex]
+  E^\dag \dfrac{\ket{00} - \ket{11}}{\sqrt{2}} = \ket{10} &
+  E^\dag \dfrac{\ket{01} - \ket{10}}{\sqrt{2}} = \ket{11}
+\end{array}
+\]
+We can use this to work out the state of the system at this point (immediately
+prior to the measurement).  As input, we were given a system in the state \[
+  \ket{\Psi_1} = \frac{\ket{\psi00} + \ket{\psi11}}{\sqrt{2}};
+\] expanding out
+the definition of $\psi$ lets us write this as \[
+  \ket{\Psi_1} = \frac{ \psi_0\ket{000} + \psi_1\ket{100}
+                      + \psi_0\ket{011} + \psi_1\ket{111}}
+                      {\sqrt{2}}.
+\]  To apply $E^\dag$ to the first two qubits (that is, to compute $(E^\dag
+\tensor I_2)\ket{\Psi_1}$), we apply $\CNOT$ to the first two qubits and the $H$
+to the very first one.  Applying $\CNOT$ produces the state \[
+  \ket{\Psi_2'} = \frac{ \psi_0\ket{000} + \psi_1\ket{110}
+                       + \psi_0\ket{011} + \psi_1\ket{101}}
+                       {\sqrt{2}},
+\] and applying $H$ to that gives the final state \[
+  \ket{\Psi_2} = \frac{ \psi_0\ket{000} + \psi_0\ket{100}
+                      + \psi_1\ket{010} - \psi_1\ket{110}
+                      + \psi_0\ket{011} + \psi_0\ket{111}
+                      + \psi_1\ket{001} - \psi_1\ket{101}}
+                      {2}.
+\]  It is clearer to write this state with its coefficients in the usual order,
+as
+\begin{gather*}
+  \ket{\Psi_2} = \frac{ \psi_0\ket{000}
+                      + \psi_1\ket{001}
+                      + \psi_1\ket{010}
+                      + \psi_0\ket{011}
+                      + \psi_0\ket{100}
+                      - \psi_1\ket{110}
+                      - \psi_1\ket{101}
+                      + \psi_0\ket{111}}
+                      {2} \\
+               = \vector{\pos\psi_0 \pos\psi_1 \pos\psi_1 \pos\psi_0
+                         \pos\psi_0    -\psi_1    -\psi_1 \pos\psi_0}.
+\end{gather*}
+This state is thoroughly entangled: although the $\psi_0$s and $\psi_1$s repeat
+their pattern of four twice, the two negative signs prevent the state from being
+separable.
+
+\subsection{Measurement}\label{sec:measurement}
+Alice now measures the first two qubits of $\ket{\Psi_2}$ so that she can send
+them to Bob.  Looking at the definition of $\ket{\Psi_2}$, we see that this will
+put us in worlds given by adjacent coefficients in the vector: if we measure
+$\ket{00}$, then we are working with \[ \frac{\psi_0\ket{000} +
+\psi_1\ket{001}}{2}, \] and so on.  Importantly, this vector has the property
+that grouping it up into pairs always produces one $\psi_0$ and one
+$\pm\psi_1$.  Thus, we know two things: first, that which outcome we get is
+uniformly random; and second, that the resulting state will have all the
+information necessary to reconstruct $\psi$.  Measuring the qubits, then, brings
+us into one four possible worlds:
+\begingroup
+\def\ZX#1{\hphantom{ZX}\mathllap{#1}}
+\begin{alignat*}{3}
+  \ket{\Psi_{3,00}}
+     &= \pos\psi_0\ket{000} + \psi_1\ket{001}
+    &&= \ket{00} \tensor \ZX{  }\ket{\psi}
+    &&= \ket{00} \tensor{\ket{\psi'_{00}}} \\
+  \ket{\Psi_{3,01}}
+     &= \pos\psi_1\ket{010} + \psi_0\ket{011}
+    &&= \ket{01} \tensor \ZX{ X}\ket{\psi}
+    &&= \ket{01} \tensor{\ket{\psi'_{01}}} \\
+  \ket{\Psi_{3,10}}
+     &= \pos\psi_0\ket{100} - \psi_1\ket{101}
+    &&= \ket{10} \tensor \ZX{Z }\ket{\psi}
+    &&= \ket{10} \tensor{\ket{\psi'_{10}}} \\
+  \ket{\Psi_{3,11}}
+     &=   -\psi_1\ket{110} + \psi_0\ket{111}
+    &&= \ket{11} \tensor \ZX{ZX}\ket{\psi}
+    &&= \ket{11} \tensor{\ket{\psi'_{11}}},
+\end{alignat*}
+\endgroup
+where $X$ is bitwise negation, as before, and $Z$ is the unitary
+matrix \[ Z = \begin{pmatrix} 1 & \pos0 \\ 0 & -1 \end{pmatrix} \] that flips
+the sign of the probability amplitude of $\ket{1}$.
+
+\subsection{Newtonian communication}\label{sec:newtonian-communication}
+Now that the whole system is in the state $\ket{\Psi_{3,xy}} =
+\ket{xy}\tensor\ket{\psi'_{xy}}$, Alice needs to let Bob know just which of the
+$\ket{\psi'_{xy}}$ he has.  Thus, she simply sends him the two bits $(x,y)$.
+These two bits alone are not enough to learn anything about $\ket{\psi}$; as we
+saw above, they were obtained uniformly at random.  But without these two bits,
+Bob's qubit is essentially equally random.  Bob cannot learn anything from his
+qubit without measuring it, and -- since he does not know which of the
+$\ket{xy}$ Alice measured -- we can see that the aggregate probability of
+measuring $\ket{0}$ is equal to that of measuring $\ket{1}$ when we look at all
+of the $\ket{\Psi_{3,xy}}$ taken together.  Thus, no information about
+$\ket{\psi}$ is present in either the Newtonian bits or Bob's qubit; it is only
+by bringing them together that Bob can learn what $\ket{\psi}$ was!%
+\footnote{This means that quantum mechanics cannot send information faster than
+  light, and so does not violate relativity; until the classical bits are sent
+  in an ordinary manner (which means at most at the speed of light), Bob does
+  not know what $\psi$ was.  This also means that intercepting the classical
+  message provides no information, so as long as the qubits are private, this
+  scheme is also secure.}
+
+\subsection{Fixing}\label{sec:fixing}
+Bob receives Alice's message of $(x,y)$, and uses this to undo the manner in
+which his qubit $\ket{\psi'_{xy}}$ was scrambled.
+\begin{enumerate}
+\item If Bob receives $(0,0)$, then his qubit is simply $\psi$, so he does
+  nothing.
+
+\item If Bob receives $(0,1)$, then his qubit is $X\ket{\psi}$; to recover
+  $\ket{\psi}$, he applies $X$ again, since bitwise negation is self-inverse.
+
+\item If Bob receives $(1,0)$, then his qubit is $Z\ket{\psi}$; to recover
+  $\ket{\psi}$, he applies $Z$ again, since ordinary negation is self-inverse.
+
+\item If Bob receives $(1,1)$, then his qubit is $ZX\ket{\psi}$; to recover
+  $\ket{\psi}$, he applies $XZ$, since he must undo the transformations in the
+  opposite order.
+\end{enumerate}
+Thus, we can define the family of matrices $F_{x,y}$ as
+\begingroup
+\makeatletter
+\def\mpos{\@ifnextchar-{}\pos}
+\def\Mfmt#1 #2 \\ #3 #4\relax{\begin{pmatrix}
+  #1 & \mpos#2 \\
+  #3 & \mpos#4
+\end{pmatrix}}
+\def\M#1{\Mfmt#1\relax}
+\begin{alignat*}{2}
+  F_{0,0} &=  I_2 &&= \M{1 0  \\ 0  1} \\
+  F_{0,1} &=  X   &&= \M{0 1  \\ 1  0} \\
+  F_{1,0} &=  Z   &&= \M{1 0  \\ 0 -1} \\
+  F_{0,1} &=  XZ  &&= \M{0 -1 \\ 1  0},
+\end{alignat*}
+\endgroup
+and Bob computes \[ \ket{\Psi_4} = (I_4 \tensor F_{x,y})\ket{\Psi_{3,xy}} =
+\ket{xy} \tensor F_{x,y}\ket{\psi'_{xy}} = \ket{xy\psi}. \]
+
+\subsection{The whole algorithm}\label{sec:whole-algorithm}
+In the end, Alice has consumed two qubits to allow Bob to know -- without
+measuring anything -- that he now has a qubit in the state $\ket{\psi}$ that
+Alice was sending him.  Another way of putting this is that the quantum
+teleportation algorithm computes
+\begin{align*}
+  \ket{\Psi_2}
+    &= \big[(E^\dag \tensor I_2) \mtimes (I_2 \tensor E)\big]\ket{00\psi} \\
+    &= \bigg[
+         \Big(\big[(H \tensor I_2) \mtimes \CNOT\big] \tensor I_2\Big)
+         \mtimes
+         \Big(I_2 \tensor \big[\CNOT \mtimes (H \tensor I_2)\big]\Big)
+       \bigg]\ket{00\psi}.
+\end{align*}
+We encourage the reader to work out these matrices for themself; the process of
+doing so can be extremely edifying.
