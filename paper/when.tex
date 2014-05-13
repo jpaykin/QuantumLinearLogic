@@ -6,12 +6,12 @@ and speculate on future directions.
 \subsection{Related Work} 
 
 One of the first generic models for quantum computation was the Quantum
-Turing Machine (QTM), introduced by \cite{deutsch1985}. His machine allows for superpositions
+Turing Machine (QTM), introduced by \citet{deutsch1985}. His machine allows for superpositions
 of machine states, mimicking the state of qubits, and is equivalent to the
 quantum circuits used by physicists. With the presence of a universal quantum turing
 machine, all quantum algorithms can be expressed formally in terms of QTMs. 
 
-\cite{selinger2006lambda,selinger2009quantum} describe a higher-order quantum lambda 
+\Citet{selinger2006lambda,selinger2009quantum} describe a higher-order quantum lambda 
 calculus which  takes an important step in introducing abstraction of first-class 
 quantum circuits.
 Their calculus is equipped with a linear type system, which uses subtyping of the
@@ -20,39 +20,49 @@ a number of constants: $\texttt{new}$ for pure state preparation,
 $\texttt{meas}$ for measurement, and constants corresponding to all unitary
 transforamtions. The ability to introduce arbitrary unitary matrices is
 important for expressing known quantum algorithms, but breaks the abstraction 
-bewteen higher-order circuits and unitary matrices. \cite{abramsky2009categorical}
+bewteen higher-order circuits and unitary matrices. \citet{abramsky2009categorical}
 address this by expressing teleportation and other algorithms \emph{purely} in
 category-theoretic terms, thereby eliminating the need for arbitrary unary matrices.
 
 There are many attempts to develop usable quantum languages for future physical quantum
-computers. \cite{omer2000quantum} developed the langauge QCL, which is a procedural
-quantum language based on C. QCL can be used as a frontend for a quantum simulator,
+computers. \citet{omer2000quantum} developed the langauge QCL, which is a procedural
+quantum language based on C\@. QCL can be used as a frontend for a quantum simulator,
 although it is designed as a real language for quantum computers. Quipper,
-developed by \cite{green13quipper}, 
+developed by \citet{green13quipper}, 
 it is a higher-order functional language embedded in Haskell. Compared to QCL,
 Quipper formalizes the compilation of code to quantum circuits.
 Both languages allow for effectful computation, limited recursion, and automatic
 generation of quantum code from classical functions.
 
 On the semantic side of quantum langauges, there is extensive work in denotational 
-models of quantum computation. \cite{coecke2005kindergarten} presents an
+models of quantum computation. \citet{coecke2005kindergarten} presents an
 explicit connection between quantum circuit diagrams and category theoretic 
 commuting diagrams in what he calls ``Kindergarten Quantum Mechanics.''
-Along a similar vein, \cite{abramsky2006categorical} present quantum logic,
+Along a similar vein, \citet{abramsky2006categorical} present quantum logic,
 of which there is a large body of work, in the world of category theory with
 the goal of making quantum algorithms more expressible. That work is a precursor
 to Abramsky's model described in \cref{sec:how}.
 
 \subsection{Next steps}
 
-The way forward for quantum computing depends in some sense on engineering. 
-Physical quantum computers are still in their infancy, and the different 
-engineering design choices that are made will influence the computing design choices.
-The quest for feasable quantum computers is racing ahead day by day.
-Researchers are able to factor larger and larger numbers using Shore's algorithm,
-culminating in a factorization of 143 by \cite{xu2012quantum}.
-In 2012 \citet{bao2012quantum} succeeded in performing the first large-scale teleportation
-of qubits, across a distance of 150~meters.
-There are even commercial products, such as D-Wave Systems \citep{johnson2011quantum}, which utilizes
-quantum superpositions (although there is speculation over whether the D-Wave truly takes
-advantage of the quantum properties, or is equivalent to a classical computer).
+The way forward for quantum computing depends in some sense on engineering.
+Physical quantum computers are still in their infancy, and the different
+engineering design choices that are made will influence the computing design
+choices.  The quest for feasable quantum computers is racing ahead day by day.
+Researchers are able to factor larger and larger numbers using Shore's
+algorithm, culminating in a factorization of $143$ by \citet{xu2012quantum}.  In
+2012, \citet{ma2012quantum} succeeded in a large-scale teleportation of qubits,
+across a distance of 143~kilometers.  There is even a commercial product, such
+as that produced by D-Wave Systems \citep{johnson2011quantum}, which purports to
+utilizes quantum superposition for specialized computation (although there is as
+yet a great deal of skepticism as to whether D-Wave's machine truly takes
+advantage of quantum mechanics, or is simply equivalent to a Newtonian
+computer \citep{aaronson2014TIME}).
+
+Yet no matter how powerful quantum computers get, understanding how their
+computational behavior really works will be essential to actually using them.
+The computer revolution would not have come about without the high-level
+languages and logics that computer science brought to bear upon the silicon
+machines.  So too will we need to learn how to think about what our quantum
+computers are doing in order to tame the powerful new machines we will
+eventually have at our disposal.
